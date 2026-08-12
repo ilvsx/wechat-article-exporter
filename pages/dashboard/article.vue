@@ -11,7 +11,9 @@ import type {
   ValueFormatterParams,
   ValueGetterParams,
 } from 'ag-grid-community';
+
 import { AgGridVue } from 'ag-grid-vue3';
+import dayjs from 'dayjs';
 import { defu } from 'defu';
 import type { PreviewArticle } from '#components';
 import { durationToSeconds, formatItemShowType, formatTimeStamp, sleep } from '#shared/utils/helpers';
@@ -52,6 +54,37 @@ interface Article extends AppMsgExWithFakeID, Partial<ArticleMetadata> {
 }
 
 let globalRowData: Article[] = [];
+// 当前账号的全部文章（已按 hideDeleted 过滤），供时间范围筛选使用
+let allArticles: Article[] = [];
+
+// 发布时间范围筛选（unix 秒，为所选日期的 00:00:00）
+const dateRangeStart = ref<number | null>(null);
+const dateRangeEnd = ref<number | null>(null);
+
+function formatDate(value: number | null, fallback: string): string {
+  return value === null ? fallback : dayjs.unix(value).format('YYYY-MM-DD');
+}
+
+// 按发布时间范围过滤表格数据；结束日期包含当天（+86399 秒到 23:59:59）
+function applyDateRangeFilter() {
+  const start = dateRangeStart.value;
+  const end = dateRangeEnd.value;
+  globalRowData = allArticles.filter(article => {
+    if (start !== null && article.update_time < start) return false;
+    if (end !== null && article.update_time > end + 86399) return false;
+    return true;
+  });
+  gridApi.value?.setGridOption('rowData', globalRowData);
+}
+
+function clearDateRange() {
+  dateRangeStart.value = null;
+  dateRangeEnd.value = null;
+}
+
+watch([dateRangeStart, dateRangeEnd], () => {
+  applyDateRangeFilter();
+});
 
 const columnDefs = ref<ColDef[]>([
   {
@@ -389,8 +422,8 @@ async function switchTableData(fakeid: string) {
     }
   }
   await sleep(200);
-  globalRowData = articles.filter(article => (hideDeleted.value ? !article.is_deleted : true));
-  gridApi.value?.setGridOption('rowData', globalRowData);
+  allArticles = articles.filter(article => (hideDeleted.value ? !article.is_deleted : true));
+  applyDateRangeFilter();
   loading.value = false;
 }
 
@@ -534,6 +567,38 @@ function copyWechatLink() {
         <div class="flex flex-col xl:flex-row gap-2">
           <div class="flex space-x-3">
             <AccountSelectorForArticle v-model="selectedAccount" class="w-80" />
+          </div>
+          <!-- 发布时间范围筛选 -->
+          <div class="flex items-center space-x-2">
+            <UPopover :popper="{ placement: 'bottom-start' }">
+              <UButton
+                color="gray"
+                icon="i-heroicons-calendar-days-20-solid"
+                :label="formatDate(dateRangeStart, '开始日期')"
+              />
+              <template #panel="{ close }">
+                <BaseDatePicker v-model="dateRangeStart" @close="close" />
+              </template>
+            </UPopover>
+            <span class="text-gray-400 select-none">~</span>
+            <UPopover :popper="{ placement: 'bottom-start' }">
+              <UButton
+                color="gray"
+                icon="i-heroicons-calendar-days-20-solid"
+                :label="formatDate(dateRangeEnd, '结束日期')"
+              />
+              <template #panel="{ close }">
+                <BaseDatePicker v-model="dateRangeEnd" @close="close" />
+              </template>
+            </UPopover>
+            <UButton
+              v-if="dateRangeStart !== null || dateRangeEnd !== null"
+              size="xs"
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-x-mark-20-solid"
+              @click="clearDateRange"
+            />
           </div>
         </div>
         <div class="flex items-center space-x-2">
