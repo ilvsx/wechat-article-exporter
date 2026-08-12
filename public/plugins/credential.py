@@ -13,8 +13,8 @@ class ExtractSetCookie:
         self.cookies = {}
 
     def response(self, flow: mitmproxy.http.HTTPFlow):
-        # 检查请求的 URL 是否符合过滤器
-        if flow.request.url.startswith("https://mp.weixin.qq.com/s?__biz="):
+        # 检查请求的 URL 是否符合过滤器（兼容参数顺序，如 s?src=11&timestamp=...&__biz=...）
+        if flow.request.host == "mp.weixin.qq.com" and flow.request.path.startswith("/s?"):
             # 提取 __biz 参数
             parsed_url = urlparse(flow.request.url)
             query_params = parse_qs(parsed_url.query)
