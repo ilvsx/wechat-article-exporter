@@ -1,4 +1,4 @@
-import type { AppMsgExWithFakeID, PublishInfo, PublishPage } from '~/types/types';
+import type { AppMsgEx, AppMsgExWithFakeID } from '~/types/types';
 import { db } from './db';
 import { type MpAccount, updateInfoCache } from './info';
 
@@ -7,47 +7,49 @@ export type ArticleAsset = AppMsgExWithFakeID;
 /**
  * 更新文章缓存
  * @param account
- * @param publish_page
+ * @param articles 本次接口返回的文章列表
+ * @param completed 是否已同步完毕（接口返回 can_msg_continue === 0）
  */
-export async function updateArticleCache(account: MpAccount, publish_page: PublishPage) {
+export async function updateArticleCache(account: MpAccount, articles: AppMsgEx[], completed = false) {
   await db.transaction('rw', ['article', 'info'], async () => {
     const keys = await db.article.toCollection().keys();
 
     const fakeid = account.fakeid;
-    const total_count = publish_page.total_count;
-    const publish_list = publish_page.publish_list.filter(item => !!item.publish_info);
 
-    // 统计本次缓存成功新增的数量
+    // 统计本次缓存成功新增的消息数与文章数
     let msgCount = 0;
     let articleCount = 0;
+    const addedMessageIds = new Set<number>();
 
-    for (const item of publish_list) {
-      const publish_info: PublishInfo = JSON.parse(item.publish_info);
-      let newEntryCount = 0;
-
-      for (const article of publish_info.appmsgex) {
-        const key = await db.article.put({ ...article, fakeid, _status: '' }, `${fakeid}:${article.aid}`);
-        if (!keys.includes(key)) {
-          newEntryCount++;
-          articleCount++;
+    for (const article of articles) {
+      const key = await db.article.put({ ...article, fakeid, _status: '' }, `${fakeid}:${article.aid}`);
+      if (!keys.includes(key)) {
+        articleCount++;
+        if (article.itemidx === 1) {
+          addedMessageIds.add(article.appmsgid);
         }
       }
-
-      if (newEntryCount > 0) {
-        // 新增成功
-        msgCount++;
-      }
     }
+    msgCount = addedMessageIds.size;
 
     await updateInfoCache({
       fakeid: fakeid,
-      completed: publish_list.length === 0,
+      completed: completed,
       count: msgCount,
       articles: articleCount,
       nickname: account.nickname,
       round_head_img: account.round_head_img,
-      total_count: total_count,
+      total_count: account.total_count,
     });
+
+    // 新接口不返回文章总数，同步完成时以已同步消息数作为总数，进度显示为 100%
+    if (completed) {
+      const infoCache = await db.info.get(fakeid);
+      if (infoCache) {
+        infoCache.total_count = infoCache.count;
+        await db.info.put(infoCache);
+      }
+    }
   });
 }
 

@@ -24,7 +24,7 @@ import { IMAGE_PROXY, websiteName } from '~/config';
 import { sharedGridOptions } from '~/config/shared-grid-options';
 import { deleteAccountData } from '~/store/v2';
 import { getArticleCache, hitCache } from '~/store/v2/article';
-import { getAllInfo, getInfoCache, importMpAccounts, type MpAccount } from '~/store/v2/info';
+import { getAllInfo, getInfoCache, importMpAccounts, type MpAccount, updateInfoCache } from '~/store/v2/info';
 import type { AccountManifest } from '~/types/account';
 import type { Preferences } from '~/types/preferences';
 import { exportAccountJsonFile } from '~/utils/exporter';
@@ -66,10 +66,31 @@ function addAccount() {
 }
 async function onSelectAccount(account: MpAccount) {
   addBtnLoading.value = true;
-  await loadAccountArticle(account, false);
-  await refresh();
-  addBtnLoading.value = false;
-  toast.success('公众号添加成功', `已成功添加公众号【${account.nickname}】，并同步了第一页的文章数据`);
+  try {
+    await loadAccountArticle(account, false);
+    await refresh();
+    toast.success('公众号添加成功', `已成功添加公众号【${account.nickname}】，并同步了第一页的文章数据`);
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    if (message.includes('Credential')) {
+      // 未抓到该公众号的凭据：先登记公众号（搜索能拿到昵称/头像），抓取凭据后再同步
+      await updateInfoCache({
+        fakeid: account.fakeid,
+        completed: false,
+        count: 0,
+        articles: 0,
+        nickname: account.nickname,
+        round_head_img: account.round_head_img,
+        total_count: 0,
+      });
+      await refresh();
+      toast.warning('公众号已添加（暂未同步）', message);
+    } else {
+      toast.error('添加公众号失败', message);
+    }
+  } finally {
+    addBtnLoading.value = false;
+  }
   // 通知 Credentials 面板按钮立即变更为“已添加”
   accountEventBus.emit('account-added', { fakeid: account.fakeid });
 }
@@ -94,7 +115,7 @@ async function _load(account: MpAccount, begin: number, loadMore: boolean, promi
   syncingRowId.value = account.fakeid;
   isSyncing.value = true;
 
-  const [articles, completed] = await getArticleList(account, begin);
+  const [articles, completed, nextOffset] = await getArticleList(account, begin);
   if (isCanceled.value) {
     isCanceled.value = false;
     promise.reject(new Error('已取消同步'));
@@ -108,8 +129,8 @@ async function _load(account: MpAccount, begin: number, loadMore: boolean, promi
     return;
   }
 
-  const count = articles.filter(article => article.itemidx === 1).length; // 消息数
-  begin += count;
+  // 使用接口返回的下一页偏移量
+  begin = nextOffset;
 
   // 检查是否可以「快进」，也就是存在比 lastArticle 更早的缓存数据
   // todo: 这里还可以继续优化，防止出现多段不连续的范围
@@ -170,8 +191,6 @@ async function loadAccountArticle(account: MpAccount, loadMore = true) {
 
 // 同步所有公众号
 async function loadSelectedAccountArticle() {
-  if (!checkLogin()) return;
-
   isCanceled.value = false;
 
   try {
@@ -308,8 +327,6 @@ const columnDefs = ref<ColDef[]>([
     cellRenderer: GridAccountActions,
     cellRendererParams: {
       onSync: (params: ICellRendererParams) => {
-        if (!checkLogin()) return;
-
         isCanceled.value = false;
         loadAccountArticle(params.data)
           .then(() => {
@@ -533,12 +550,6 @@ const { getActualDateRange } = useSyncDeadline();
           <span class="self-end text-sm text-blue-500 font-medium">同步范围: {{ getActualDateRange() }}</span>
         </div>
       </header>
-
-      <!-- 同步失效提示 -->
-      <div class="flex flex-shrink-0 items-center gap-2 px-3 py-2 text-sm text-rose-600 dark:text-rose-300">
-        <UIcon name="i-lucide:alert-triangle" class="size-4 shrink-0" />
-        <span>微信已关闭历史文章列表接口，「同步」当前无法拉取新数据；已同步的文章仍可正常下载和导出。</span>
-      </div>
 
       <!-- 数据表格 -->
       <ag-grid-vue

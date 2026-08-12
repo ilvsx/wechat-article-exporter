@@ -139,10 +139,9 @@
 
 <script setup lang="ts">
 import dayjs from 'dayjs';
-import { getArticleList, getArticleListWithCredential } from '~/apis';
+import { getArticleList } from '~/apis';
 import LoginModal from '~/components/modal/Login.vue';
 import toastFactory from '~/composables/toast';
-import useLoginCheck from '~/composables/useLoginCheck';
 import { CREDENTIAL_API_HOST, CREDENTIAL_LIVE_MINUTES, isDev } from '~/config';
 import { getInfoCache, type MpAccount } from '~/store/v2/info';
 import type { ParsedCredential } from '~/types/credential';
@@ -159,9 +158,14 @@ const state = defineModel<CredentialState>('state', { default: 'inactive' });
 const pullArticleLoading = ref(false);
 async function pullData(fakeid: string) {
   pullArticleLoading.value = true;
-  const articles = await getArticleListWithCredential(fakeid);
-  console.log(articles);
-  pullArticleLoading.value = false;
+  try {
+    // 仅用于开发调试：拉取第一页文章并打印
+    const account: MpAccount = { fakeid, completed: false, count: 0, articles: 0, total_count: 0 };
+    const [articles] = await getArticleList(account, 0);
+    console.log(articles);
+  } finally {
+    pullArticleLoading.value = false;
+  }
 }
 
 const tabs = [
@@ -174,8 +178,6 @@ const tabs = [
     label: 'mitmproxy 插件版',
   },
 ];
-
-const { checkLogin } = useLoginCheck();
 
 const credentials = useLocalStorage<ParsedCredential[]>('auto-detect-credentials:credentials', []);
 for (const item of credentials.value) {
@@ -517,7 +519,6 @@ async function addAccount(credential: ParsedCredential) {
   if (credential.added || addingBiz.value === credential.biz) {
     return;
   }
-  if (!checkLogin()) return;
 
   addingBiz.value = credential.biz;
   const nickname = credential.nickname || credential.biz;
@@ -527,7 +528,7 @@ async function addAccount(credential: ParsedCredential) {
     count: 0,
     articles: 0,
     total_count: 0,
-    nickname: credential.nickname,
+    nickname: nickname,
     round_head_img: credential.avatar,
   };
 

@@ -1,74 +1,66 @@
 import { request } from '#shared/utils/request';
-import { ACCOUNT_LIST_PAGE_SIZE, ARTICLE_LIST_PAGE_SIZE } from '~/config';
+import { ACCOUNT_LIST_PAGE_SIZE, CREDENTIAL_LIVE_MINUTES } from '~/config';
 import { updateArticleCache } from '~/store/v2/article';
 import { type MpAccount, updateLastUpdateTime } from '~/store/v2/info';
 import type { CommentResponse } from '~/types/comment';
 import type { ParsedCredential } from '~/types/credential';
-import type { ParsedProfileGetMsg, ProfileGetMsgResponse } from '~/types/profile_getmsg';
-import type {
-  AccountInfo,
-  AppMsgEx,
-  AppMsgPublishResponse,
-  PublishInfo,
-  PublishPage,
-  SearchBizResponse,
-} from '~/types/types';
+import type { ProfileGetMsgResponse } from '~/types/profile_getmsg';
+import type { AccountInfo, AppMsgEx, SearchBizResponse } from '~/types/types';
+import { parseGeneralMsgList, parseProfileGetMsgList } from '~/utils/profile-getmsg';
 
 const loginAccount = useLoginAccount();
 const credentials = useLocalStorage<ParsedCredential[]>('auto-detect-credentials:credentials', []);
 
 /**
- * 获取文章列表
- * @param account
- * @param begin
- * @param keyword
- * @return [文章列表, 是否加载完毕, 文章总数]
+ * 获取指定公众号的有效 Credential
+ * @description 微信客户端历史消息接口需要携带动态凭据（key/uin/pass_ticket），凭据约 CREDENTIAL_LIVE_MINUTES 分钟过期
+ * @param fakeid
  */
-export async function getArticleList(
-  account: MpAccount,
-  begin = 0,
-  keyword = ''
-): Promise<[AppMsgEx[], boolean, number]> {
-  const resp = await request<AppMsgPublishResponse>('/api/web/mp/appmsgpublish', {
+function getCredential(fakeid: string): ParsedCredential {
+  const credential = credentials.value.find(item => item.biz === fakeid);
+  if (!credential) {
+    throw new Error('未找到该公众号的 Credential，请先点击右上角「抓取 Credentials」完成抓取');
+  }
+  if (Date.now() - credential.timestamp > CREDENTIAL_LIVE_MINUTES * 60 * 1000) {
+    throw new Error('该公众号的 Credential 已过期，请点击右上角「抓取 Credentials」重新抓取');
+  }
+  return credential;
+}
+
+/**
+ * 获取文章列表（微信客户端历史消息接口，需要 Credential）
+ * @param account
+ * @param begin 消息偏移量，每页最多 10 条消息
+ * @return [文章列表, 是否加载完毕, 下一页偏移量]
+ */
+export async function getArticleList(account: MpAccount, begin = 0): Promise<[AppMsgEx[], boolean, number]> {
+  const credential = getCredential(account.fakeid);
+
+  const resp = await request<ProfileGetMsgResponse>('/api/web/mp/profile_ext_getmsg', {
     query: {
       id: account.fakeid,
       begin: begin,
-      size: ARTICLE_LIST_PAGE_SIZE,
-      keyword: keyword,
+      size: 10,
+      uin: credential.uin,
+      key: credential.key,
+      pass_ticket: credential.pass_ticket,
     },
   });
 
-  if (resp.base_resp.ret === 0) {
-    const publish_page: PublishPage = JSON.parse(resp.publish_page);
-    const publish_list = publish_page.publish_list.filter(item => !!item.publish_info);
-
-    // 返回的文章数量为0就表示已加载完毕
-    const isCompleted = publish_list.length === 0;
-
-    // 更新缓存，注意带有关键字搜索的结果不能写入缓存
-    if (!keyword) {
-      try {
-        await updateArticleCache(account, publish_page);
-
-        if (begin === 0) {
-          await updateLastUpdateTime(account.fakeid);
-        }
-      } catch (e) {
-        console.error('写入文章缓存失败:', e);
-      }
-    }
-
-    const articles = publish_list.flatMap(item => {
-      const publish_info: PublishInfo = JSON.parse(item.publish_info);
-      return publish_info.appmsgex;
-    });
-    return [articles, isCompleted, publish_page.total_count];
-  } else if (resp.base_resp.ret === 200003) {
-    loginAccount.value = null;
-    throw new Error('session expired');
-  } else {
-    throw new Error(`${resp.base_resp.ret}:${resp.base_resp.err_msg}`);
+  if (resp.ret !== 0) {
+    throw new Error(`获取文章列表失败: ${resp.ret}:${resp.errmsg}`);
   }
+
+  const list = parseGeneralMsgList(resp.general_msg_list);
+  const articles = parseProfileGetMsgList(list);
+
+  // 更新缓存与最后同步时间（completed：接口返回 can_msg_continue === 0 表示已无更多消息）
+  await updateArticleCache(account, articles, resp.can_msg_continue === 0);
+  if (begin === 0) {
+    await updateLastUpdateTime(account.fakeid);
+  }
+
+  return [articles, resp.can_msg_continue === 0, resp.next_offset];
 }
 
 /**
@@ -125,34 +117,5 @@ export async function getComment(commentId: string) {
   } catch (e) {
     console.warn('credentials parse error', e);
     return null;
-  }
-}
-
-/**
- * 获取公众号文章列表
- * @description 该接口采用微信接口，而非公众号平台接口，因此需要先获取 Credentials
- * @param fakeid
- * @param begin
- */
-export async function getArticleListWithCredential(fakeid: string, begin = 0) {
-  const targetCredential = credentials.value.find(item => item.biz === fakeid);
-  if (!targetCredential) {
-    throw new Error('目标公众号的 Credential 未设置');
-  }
-
-  const resp = await request<ProfileGetMsgResponse>('/api/web/mp/profile_ext_getmsg', {
-    query: {
-      id: fakeid,
-      begin: begin,
-      size: 10,
-      uin: targetCredential.uin,
-      key: targetCredential.key,
-      pass_ticket: targetCredential.pass_ticket,
-    },
-  });
-  if (resp.ret === 0) {
-    return JSON.parse(resp.general_msg_list) as ParsedProfileGetMsg[];
-  } else {
-    throw new Error(`${resp.ret}:${resp.errmsg}`);
   }
 }
