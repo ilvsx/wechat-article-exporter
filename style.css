@@ -71,6 +71,14 @@ body {
 }
 
 /* ============ AG Grid 细节 ============ */
+/*
+ * AG Grid 用 transform 定位每一行，因此每行都是独立的层叠上下文。
+ * 操作列的 tooltip 虽然自身层级较高，仍会跟随所在行被后续行覆盖。
+ */
+.ag-row.ag-row-hover {
+    z-index: 1;
+}
+
 /* 已删除文章行：amber 底（亮/暗双变体） */
 .deleted-row {
     background-color: #fffbeb;
