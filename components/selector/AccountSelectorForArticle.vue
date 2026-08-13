@@ -11,10 +11,10 @@
     placeholder="请选择公众号"
   >
     <template #label>
-      <UAvatar v-if="selected && selected.fakeid !== ALL_ACCOUNTS_FAKEID" :src="selected.round_head_img" size="2xs" />
+      <UAvatar v-if="display.fakeid !== ALL_ACCOUNTS_FAKEID" :src="display.round_head_img" size="2xs" />
       <UAvatar v-else class="bg-primary-100" icon="i-lucide:layout-grid" size="2xs" />
-      <span v-if="selected" class="max-w-30 line-clamp-1">{{ selected.nickname }}</span>
-      <span v-if="selected" class="shrink-0">({{ selected.articles }}篇)</span>
+      <span class="max-w-30 line-clamp-1">{{ display.nickname }}</span>
+      <span class="shrink-0">({{ display.articles }}篇)</span>
     </template>
     <template #option="{ option: account }">
       <template v-if="account.fakeid === ALL_ACCOUNTS_FAKEID">
@@ -83,4 +83,11 @@ const allOption = computed<MpAccount>(() => {
 const accountOptions = computed(() => [allOption.value, ...sortedAccountInfos.value]);
 
 const selected = defineModel<MpAccount | undefined>();
+
+// 未选择(undefined)或选中哨兵时,统一按「全部公众号」渲染(计数来自真实缓存)
+const display = computed(() => {
+  const current = selected.value;
+  if (!current || current.fakeid === ALL_ACCOUNTS_FAKEID) return allOption.value;
+  return current;
+});
 </script>

@@ -524,15 +524,8 @@ function preview(article: Article) {
 
 const loading = ref(false);
 
-// 账号筛选:默认「全部公众号」(哨兵),可选单个账号
-const selectedAccount = ref<MpAccount | undefined>({
-  fakeid: ALL_ACCOUNTS_FAKEID,
-  completed: true,
-  count: 0,
-  articles: 0,
-  total_count: 0,
-  nickname: '全部公众号',
-});
+// 账号筛选:默认「全部公众号」(undefined 或哨兵均视为全部,由选择器统一渲染计数)
+const selectedAccount = ref<MpAccount | undefined>();
 const scope = computed(() => {
   const fakeid = selectedAccount.value?.fakeid;
   return fakeid === undefined || fakeid === ALL_ACCOUNTS_FAKEID ? 'all' : fakeid;
