@@ -37,7 +37,7 @@ function copyLink() {
         color="blue"
         square
         variant="ghost"
-        class="transition-all duration-150 hover:scale-110 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400"
+        class="transition-all duration-150 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400"
         @click="copyLink"
       />
     </UTooltip>
@@ -47,7 +47,7 @@ function copyLink() {
         color="blue"
         square
         variant="ghost"
-        class="transition-all duration-150 hover:scale-110 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400"
+        class="transition-all duration-150 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400"
         @click="gotoLink"
       />
     </UTooltip>
@@ -58,7 +58,7 @@ function copyLink() {
         :color="params.data.contentDownload ? 'blue' : 'rose'"
         square
         variant="ghost"
-        class="transition-all duration-150 hover:scale-110 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400"
+        class="transition-all duration-150 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400"
         @click="preview"
       />
     </UTooltip>

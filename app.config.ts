@@ -53,5 +53,9 @@ export default defineAppConfig({
         leaveToClass: 'opacity-0 scale-95',
       },
     },
+    // tooltip 提高层级,避免被表格表头/容器遮挡
+    tooltip: {
+      container: 'z-50 group',
+    },
   },
 });
