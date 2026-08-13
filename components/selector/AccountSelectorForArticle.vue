@@ -54,10 +54,13 @@
 
 <script setup lang="ts">
 import { ALL_ACCOUNTS_FAKEID } from '~/config';
+import { db } from '~/store/v2/db';
 import { getAllInfo, type MpAccount } from '~/store/v2/info';
 
 // 已缓存的公众号信息
 const cachedAccountInfos = await getAllInfo();
+// 「全部公众号」显示真实缓存文章数(与文章表格一致;info 表计数可能滞后)
+const totalArticleCount = await db.article.count();
 const sortedAccountInfos = computed(() => {
   cachedAccountInfos.sort((a, b) => {
     return a.articles > b.articles ? -1 : 1;
@@ -67,13 +70,12 @@ const sortedAccountInfos = computed(() => {
 
 // 「全部公众号」哨兵选项(排最前)
 const allOption = computed<MpAccount>(() => {
-  const totalArticles = sortedAccountInfos.value.reduce((sum, account) => sum + account.articles, 0);
   return {
     fakeid: ALL_ACCOUNTS_FAKEID,
     completed: true,
     count: 0,
-    articles: totalArticles,
-    total_count: totalArticles,
+    articles: totalArticleCount,
+    total_count: totalArticleCount,
     nickname: '全部公众号',
   };
 });

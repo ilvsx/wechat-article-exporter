@@ -139,6 +139,8 @@ function applyDateRangeFilter() {
     return true;
   });
   gridApi.value?.setGridOption('rowData', globalRowData);
+  // allArticles 为非响应式,手动同步空态文案(无文章 vs 筛选后 0 条)
+  gridApi.value?.setGridOption('noRowsOverlayComponentParams', noRowsParams.value);
   if (hadSelection) {
     toast.info('时间范围已变化', '已勾选的文章可能不在当前范围内，请确认勾选');
   }
