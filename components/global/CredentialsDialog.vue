@@ -11,6 +11,14 @@
       </template>
 
       <div>
+        <UAlert
+          v-if="validCredentialCount === 0 && credentials.length > 0"
+          color="amber"
+          variant="subtle"
+          title="凭据已全部过期"
+          description="在 PC 微信中打开目标公众号的任意文章，凭据将自动刷新并重新生效。"
+          class="mb-3"
+        />
         <UTabs
           :items="tabs"
           :ui="{ list: { marker: { background: 'bg-blue-500 text-white' }, tab: { active: 'text-white' } } }"
@@ -108,8 +116,13 @@
               <p>fakeid: {{ credential.biz }}</p>
               <p>获取时间: {{ credential.time }}</p>
               <div class="flex items-center justify-between mt-4">
-                <span v-if="credential.valid" class="font-sans font-bold text-green-500">有效</span>
-                <span v-else class="font-sans font-bold text-rose-500">已过期</span>
+                <div class="flex flex-col gap-0.5">
+                  <span v-if="!isExpired(credential)" class="font-sans font-bold text-green-500">有效</span>
+                  <span v-else class="font-sans font-bold text-rose-500">已过期</span>
+                  <span v-if="isExpired(credential)" class="text-xs text-slate-11 dark:text-slate-400">
+                    在微信中打开该公众号文章即可自动刷新
+                  </span>
+                </div>
                 <UButton
                   size="xs"
                   :color="credential.added ? 'green' : 'blue'"
@@ -179,12 +192,9 @@ const tabs = [
   },
 ];
 
-const credentials = useLocalStorage<ParsedCredential[]>('auto-detect-credentials:credentials', []);
-for (const item of credentials.value) {
-  item.valid = Date.now() < item.timestamp + 1000 * 60 * CREDENTIAL_LIVE_MINUTES;
-}
-const validCredentialCount = computed(() => credentials.value.filter(c => c.valid).length);
-const pendingCredentialCount = computed(() => credentials.value.filter(c => c.valid && !c.added).length);
+const { credentials, isExpired, validCount } = useCredentials();
+const validCredentialCount = validCount;
+const pendingCredentialCount = computed(() => credentials.value.filter(c => !isExpired(c) && !c.added).length);
 const toast = toastFactory();
 const modal = useModal();
 
@@ -552,6 +562,9 @@ async function addAccount(credential: ParsedCredential) {
 watchEffect(() => {
   if (!monitoring.value && !wsMonitoring.value) {
     state.value = 'inactive';
+  } else if (credentials.value.length > 0 && validCredentialCount.value === 0) {
+    // 监控中但凭据已全部过期：警告态
+    state.value = 'warning';
   } else if (monitoring.value || wsMonitoring.value) {
     state.value = 'active';
   } else {

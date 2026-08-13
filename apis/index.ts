@@ -1,5 +1,5 @@
 import { request } from '#shared/utils/request';
-import { ACCOUNT_LIST_PAGE_SIZE, CREDENTIAL_LIVE_MINUTES } from '~/config';
+import { ACCOUNT_LIST_PAGE_SIZE } from '~/config';
 import { updateArticleCache } from '~/store/v2/article';
 import { type MpAccount, updateLastUpdateTime } from '~/store/v2/info';
 import type { CommentResponse } from '~/types/comment';
@@ -9,7 +9,7 @@ import type { AccountInfo, AppMsgEx, SearchBizResponse } from '~/types/types';
 import { parseGeneralMsgList, parseProfileGetMsgList } from '~/utils/profile-getmsg';
 
 const loginAccount = useLoginAccount();
-const credentials = useLocalStorage<ParsedCredential[]>('auto-detect-credentials:credentials', []);
+const { credentials, isExpired } = useCredentials();
 
 /**
  * 获取指定公众号的有效 Credential
@@ -21,7 +21,7 @@ function getCredential(fakeid: string): ParsedCredential {
   if (!credential) {
     throw new Error('未找到该公众号的 Credential，请先点击右上角「抓取 Credentials」完成抓取');
   }
-  if (Date.now() - credential.timestamp > CREDENTIAL_LIVE_MINUTES * 60 * 1000) {
+  if (isExpired(credential)) {
     throw new Error('该公众号的 Credential 已过期，请点击右上角「抓取 Credentials」重新抓取');
   }
   return credential;

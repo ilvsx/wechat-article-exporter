@@ -16,7 +16,7 @@ import type { DownloadOptions } from './types';
 
 type DownloadType = 'html' | 'metadata' | 'comments' | 'fakeid';
 
-const credentials = useLocalStorage<ParsedCredential[]>('auto-detect-credentials:credentials', []);
+const { credentials, isExpired } = useCredentials();
 const preferences: Ref<Preferences> = usePreferences() as unknown as Ref<Preferences>;
 
 export class Downloader extends BaseDownloader {
@@ -375,7 +375,14 @@ export class Downloader extends BaseDownloader {
         const proxy = this.proxyManager.getBestProxy();
 
         try {
-          const response = await this.fetchComments(article.fakeid, cached.commentID!, buffer, proxy, article.appmsgid, article.itemidx);
+          const response = await this.fetchComments(
+            article.fakeid,
+            cached.commentID!,
+            buffer,
+            proxy,
+            article.appmsgid,
+            article.itemidx
+          );
           this.proxyManager.recordSuccess(proxy);
 
           if (response.base_resp.ret === 0) {
@@ -470,7 +477,7 @@ export class Downloader extends BaseDownloader {
 
     try {
       // 使用设置的 credentials 来抓取留言
-      const targetCredential = credentials.value.find(item => item.biz === fakeid && item.valid);
+      const targetCredential = credentials.value.find(item => item.biz === fakeid && !isExpired(item));
       if (!targetCredential) {
         throw new Error('目标公众号的 Credential 未设置');
       }
@@ -478,8 +485,9 @@ export class Downloader extends BaseDownloader {
       const Authorization = (preferences.value as Preferences).privateProxyAuthorization || '';
       const url = `https://mp.weixin.qq.com/mp/appmsg_comment?action=getcomment&scene=0&appmsgid=${appmsgid}&idx=${itemidx}&__biz=${targetCredential.biz}&comment_id=${commentID}&uin=${targetCredential.uin}&key=${targetCredential.key}&pass_ticket=${encodeURIComponent(targetCredential.pass_ticket)}&appmsg_token=${encodeURIComponent(targetCredential.appmsg_token)}&wxtoken=777&devicetype=UnifiedPCMac&comment_scene=0&buffer=${buffer}&offset=0&limit=100&x5=0&f=json`;
       const headers: Record<string, string> = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WECHAT/WeChatBrowser XWEB/1191',
-        'Referer': 'https://mp.weixin.qq.com/',
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WECHAT/WeChatBrowser XWEB/1191',
+        Referer: 'https://mp.weixin.qq.com/',
       };
       if (targetCredential.cookie) {
         headers.Cookie = targetCredential.cookie;
@@ -518,7 +526,7 @@ export class Downloader extends BaseDownloader {
 
     try {
       // 使用设置的 credentials 来抓取留言
-      const targetCredential = credentials.value.find(item => item.biz === fakeid && item.valid);
+      const targetCredential = credentials.value.find(item => item.biz === fakeid && !isExpired(item));
       if (!targetCredential) {
         throw new Error('目标公众号的 Credential 未设置');
       }
@@ -526,8 +534,9 @@ export class Downloader extends BaseDownloader {
       const Authorization = (preferences.value as Preferences).privateProxyAuthorization || '';
       const url = `https://mp.weixin.qq.com/mp/appmsg_comment?action=getcommentreply&scene=0&appmsgid=${appmsgid}&idx=${itemidx}&__biz=${targetCredential.biz}&comment_id=${commentID}&uin=${targetCredential.uin}&key=${targetCredential.key}&pass_ticket=${encodeURIComponent(targetCredential.pass_ticket)}&appmsg_token=${encodeURIComponent(targetCredential.appmsg_token)}&wxtoken=777&devicetype=UnifiedPCMac&content_id=${contentID}&max_reply_id=${maxReplyID}&limit=100&x5=0&f=json`;
       const headers: Record<string, string> = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WECHAT/WeChatBrowser XWEB/1191',
-        'Referer': 'https://mp.weixin.qq.com/',
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WECHAT/WeChatBrowser XWEB/1191',
+        Referer: 'https://mp.weixin.qq.com/',
       };
       if (targetCredential.cookie) {
         headers.Cookie = targetCredential.cookie;
@@ -569,9 +578,7 @@ export class Downloader extends BaseDownloader {
     let commentNum = 0;
 
     try {
-      const barData = cgiData.user_info?.appmsg_bar_data
-        || cgiData.appmsg_bar_data
-        || cgiData.user_info;
+      const barData = cgiData.user_info?.appmsg_bar_data || cgiData.appmsg_bar_data || cgiData.user_info;
       if (barData) {
         readNum = barData.read_num || 0; // 阅读量
         oldLikeNum = barData.old_like_count || 0; // 点赞

@@ -8,7 +8,7 @@ import { DEFAULT_OPTIONS } from './constants';
 import { ProxyManager } from './ProxyManager';
 import type { Callback, DownloaderStatus, DownloadOptions } from './types';
 
-const credentials = useLocalStorage<ParsedCredential[]>('auto-detect-credentials:credentials', []);
+const { credentials, isExpired } = useCredentials();
 const preferences: Ref<Preferences> = usePreferences() as unknown as Ref<Preferences>;
 
 // 下载器
@@ -149,7 +149,7 @@ export class BaseDownloader {
 
       // 使用设置的 credentials 来抓取元数据
       if (withCredential) {
-        const targetCredential = credentials.value.find(item => item.biz === fakeid && item.valid);
+        const targetCredential = credentials.value.find(item => item.biz === fakeid && !isExpired(item));
         if (targetCredential) {
           headers.cookie = `pass_ticket=${targetCredential.pass_ticket};wap_sid2=${targetCredential.wap_sid2}`;
         }
@@ -188,9 +188,9 @@ export class BaseDownloader {
 
   // 当获取阅读量和留言数据时，需要验证 Credential 是否设置正确
   protected validateCredential(fakeid: string): void {
-    const targetCredential = credentials.value.find(item => item.biz === fakeid && item.valid);
+    const targetCredential = credentials.value.find(item => item.biz === fakeid && !isExpired(item));
     if (!targetCredential) {
-      throw new Error('目标公众号的 Credential 未设置');
+      throw new Error('目标公众号的 Credential 未设置或已过期，请重新抓取');
     }
   }
 }
