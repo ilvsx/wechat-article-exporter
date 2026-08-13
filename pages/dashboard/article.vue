@@ -730,50 +730,46 @@ function collectExportRows(): Article[] {
   return rows;
 }
 
-const exportTargetRows = computed(() => collectExportRows());
 const exportScopeOptions = computed(() => [
   { label: `勾选的行 (${selectedArticles.value.length})`, value: 'selected' },
   { label: `当前页 (${pageRowCount.value})`, value: 'page' },
   { label: `筛选结果 (${filteredRowCount.value})`, value: 'filtered' },
 ]);
-const exportScopeLabel = computed(() => {
-  const n = exportTargetRows.value.length;
-  if (exportScope.value === 'selected') return n > 0 ? `已选 ${n} 篇` : '未勾选文章';
-  if (exportScope.value === 'page') return `当前页 ${n} 篇`;
-  return `筛选结果 ${n} 篇`;
-});
-
-// 导出确认框(「筛选结果全部」且存在未抓取正文时)
-const exportConfirmOpen = ref(false);
-const pendingExport = ref<{ type: ExportType; rows: Article[] } | null>(null);
-const pendingExportNoContent = computed(
-  () => pendingExport.value?.rows.filter(row => !row.contentDownload).length ?? 0
-);
-const pendingExportReadyCount = computed(
-  () => pendingExport.value?.rows.filter(row => row.contentDownload).length ?? 0
-);
 const needsContentFormats = new Set(['html', 'text', 'markdown', 'word', 'pdf']);
 
-function requestExport(type: ExportType) {
-  const rows = collectExportRows();
+// 导出弹窗:范围 + 格式一次选定
+const exportDialogOpen = ref(false);
+const exportFormats: { type: ExportType; label: string }[] = [
+  { type: 'excel', label: 'Excel' },
+  { type: 'json', label: 'JSON' },
+  { type: 'html', label: 'HTML' },
+  { type: 'text', label: 'Txt' },
+  { type: 'markdown', label: 'Markdown' },
+  { type: 'word', label: 'Word (内测中)' },
+  { type: 'pdf', label: 'PDF (内测中)' },
+];
+const exportFormatPref = useLocalStorage<ExportType>('article:exportFormat', 'excel');
+
+// 弹窗内实时计算的目标行与未抓取数
+const dialogExportRows = computed(() => collectExportRows());
+const dialogNoContentCount = computed(() => dialogExportRows.value.filter(row => !row.contentDownload).length);
+const dialogNeedsContent = computed(() => needsContentFormats.has(exportFormatPref.value));
+
+function openExportDialog() {
+  if (exportBtnLoading.value) return;
+  // 有勾选且未手动改过范围时，默认落回「勾选的行」
+  if (selectedArticles.value.length > 0 && !userTouchedScope) exportScope.value = 'selected';
+  exportDialogOpen.value = true;
+}
+
+function confirmDialogExport(skipNoContent: boolean) {
+  const rows = dialogExportRows.value;
   if (rows.length === 0) {
     toast.warning('提示', exportScope.value === 'selected' ? '请先勾选要导出的文章' : '没有可导出的文章');
     return;
   }
-  const noContent = rows.filter(row => !row.contentDownload).length;
-  if (exportScope.value === 'filtered' && needsContentFormats.has(type) && noContent > 0) {
-    pendingExport.value = { type, rows };
-    exportConfirmOpen.value = true;
-    return;
-  }
-  runExport(type, rows);
-}
-
-function confirmExport(skipNoContent: boolean) {
-  const pending = pendingExport.value;
-  if (!pending) return;
-  exportConfirmOpen.value = false;
-  runExport(pending.type, pending.rows, skipNoContent);
+  exportDialogOpen.value = false;
+  runExport(exportFormatPref.value, rows, skipNoContent);
 }
 
 function runExport(type: ExportType, rows: Article[], skipNoContent = false) {
@@ -933,61 +929,14 @@ function copyWechatLink() {
             />
           </ButtonGroup>
 
-          <!-- 导出范围 -->
-          <UTooltip text="选择导出按钮的数据范围：勾选的行 / 当前页 / 筛选结果全部" :popper="{ placement: 'top' }">
-            <USelectMenu
-              :model-value="exportScope"
-              :options="exportScopeOptions"
-              size="sm"
-              color="gray"
-              class="w-52"
-              @update:model-value="selectExportScope"
-            >
-              <template #label>
-                <span class="flex items-center gap-1.5 text-xs">
-                  <UIcon
-                    :name="
-                      exportScope === 'selected'
-                        ? 'i-lucide:check-square'
-                        : exportScope === 'page'
-                          ? 'i-lucide:file-text'
-                          : 'i-lucide:list-filter'
-                    "
-                    class="size-3.5"
-                  />
-                  <span class="shrink-0 text-slate-11 dark:text-slate-400">导出范围</span>
-                  {{ exportScopeLabel }}
-                </span>
-              </template>
-            </USelectMenu>
-          </UTooltip>
-
-          <ButtonGroup
-            :items="[
-              { label: 'Excel', event: 'export-article-excel' },
-              { label: 'JSON', event: 'export-article-json' },
-              { label: 'HTML', event: 'export-article-html' },
-              { label: 'Txt', event: 'export-article-text' },
-              { label: 'Markdown', event: 'export-article-markdown' },
-              { label: 'Word (内测中)', event: 'export-article-word' },
-              { label: 'PDF (内测中)', event: 'export-article-pdf' },
-            ]"
-            @export-article-excel="requestExport('excel')"
-            @export-article-json="requestExport('json')"
-            @export-article-html="requestExport('html')"
-            @export-article-text="requestExport('text')"
-            @export-article-markdown="requestExport('markdown')"
-            @export-article-word="requestExport('word')"
-            @export-article-pdf="requestExport('pdf')"
-          >
-            <UButton
-              :loading="exportBtnLoading"
-              :disabled="exportTargetRows.length === 0"
-              color="gray"
-              :label="exportBtnLoading ? `${exportPhase} ${exportCompletedCount}/${exportTotalCount}` : `导出 · ${exportScopeLabel}`"
-              trailing-icon="i-lucide:chevron-down"
-            />
-          </ButtonGroup>
+          <UButton
+            :loading="exportBtnLoading"
+            :disabled="allArticles.length === 0"
+            color="gray"
+            icon="i-lucide:download"
+            :label="exportBtnLoading ? `${exportPhase} ${exportCompletedCount}/${exportTotalCount}` : '导出'"
+            @click="openExportDialog"
+          />
 
           <UTooltip text="选择单个公众号后可用" :disabled="canCopyLink">
             <span class="inline-flex">
@@ -1004,29 +953,72 @@ function copyWechatLink() {
         </div>
       </header>
 
-      <!-- 导出确认(筛选结果全部且存在未抓取正文) -->
-      <UModal v-model="exportConfirmOpen">
+      <!-- 导出弹窗:范围 + 格式一次选定 -->
+      <UModal v-model="exportDialogOpen">
         <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
           <template #header>
-            <h3 class="text-base font-semibold">导出确认</h3>
+            <h3 class="text-base font-semibold">导出文章</h3>
           </template>
-          <div class="space-y-2 text-sm text-slate-11 dark:text-slate-400">
-            <p>
-              将导出筛选结果中的
-              <span class="font-semibold text-slate-12 dark:text-slate-100">{{ pendingExport?.rows.length ?? 0 }}</span>
-              篇文章
-            </p>
-            <p v-if="pendingExportNoContent > 0">
-              其中
-              <span class="font-semibold text-amber-600">{{ pendingExportNoContent }}</span>
-              篇未抓取正文，导出时将跳过
-            </p>
+          <div class="space-y-4">
+            <!-- 导出范围 -->
+            <div>
+              <p class="mb-2 text-xs font-medium text-slate-11 dark:text-slate-400">导出范围</p>
+              <div class="grid gap-2">
+                <label
+                  v-for="opt in exportScopeOptions"
+                  :key="opt.value"
+                  class="flex cursor-pointer items-center gap-2.5 rounded-md border px-3 py-2 text-sm transition"
+                  :class="
+                    exportScope === opt.value
+                      ? 'border-primary-500 bg-primary-50 dark:border-primary-500/50 dark:bg-primary-900/20'
+                      : 'border-slate-6 hover:border-slate-9 dark:border-slate-700'
+                  "
+                >
+                  <URadio :model-value="exportScope" :value="opt.value" @update:model-value="selectExportScope(opt.value)" />
+                  <span class="font-medium">{{ opt.label }}</span>
+                </label>
+              </div>
+            </div>
+            <!-- 导出格式 -->
+            <div>
+              <p class="mb-2 text-xs font-medium text-slate-11 dark:text-slate-400">导出格式</p>
+              <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <UButton
+                  v-for="fmt in exportFormats"
+                  :key="fmt.type"
+                  size="sm"
+                  :variant="exportFormatPref === fmt.type ? 'solid' : 'outline'"
+                  :color="exportFormatPref === fmt.type ? 'primary' : 'gray'"
+                  @click="exportFormatPref = fmt.type"
+                  >{{ fmt.label }}</UButton
+                >
+              </div>
+            </div>
+            <!-- 未抓取正文提示 -->
+            <div
+              v-if="dialogNoContentCount > 0 && dialogNeedsContent"
+              class="flex items-start gap-2 rounded-md border border-amber-6 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-700/50 dark:bg-amber-900/20 dark:text-amber-300"
+            >
+              <UIcon name="i-lucide:triangle-alert" class="mt-0.5 size-3.5 shrink-0" />
+              <span>
+                {{ dialogExportRows.length }} 篇中 {{ dialogNoContentCount }} 篇未抓取正文，
+                <span class="font-medium">导出将跳过未抓取的文章</span>
+              </span>
+            </div>
           </div>
           <template #footer>
             <div class="flex justify-end gap-2">
-              <UButton color="gray" variant="outline" @click="exportConfirmOpen = false">取消</UButton>
-              <UButton color="primary" variant="soft" @click="confirmExport(false)">全部导出（跳过未抓取）</UButton>
-              <UButton color="primary" @click="confirmExport(true)">仅导出已抓取的 {{ pendingExportReadyCount }} 篇</UButton>
+              <UButton color="gray" variant="outline" @click="exportDialogOpen = false">取消</UButton>
+              <UButton
+                v-if="dialogNoContentCount > 0 && dialogNeedsContent"
+                color="primary"
+                variant="soft"
+                @click="confirmDialogExport(false)"
+                >全部导出（跳过 {{ dialogNoContentCount }} 篇）</UButton
+              >
+              <UButton color="primary" :disabled="dialogExportRows.length === 0" @click="confirmDialogExport(true)">
+                导出 {{ dialogExportRows.length }} 篇
+              </UButton>
             </div>
           </template>
         </UCard>
