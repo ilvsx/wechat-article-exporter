@@ -6,6 +6,7 @@
 
     <div class="h-full overflow-y-auto p-6">
       <div class="mx-auto max-w-5xl space-y-6">
+        <SettingBackup />
         <SettingProxy />
         <div class="flex flex-wrap gap-6">
           <SettingExport />
