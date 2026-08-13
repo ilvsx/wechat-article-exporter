@@ -43,7 +43,7 @@ function copy() {
 <template>
   <div class="relative">
     <pre
-      class="bg-black text-gray-400 p-2 rounded overflow-scroll no-scrollbar"
-    ><Check v-if="copied" class="absolute right-3 top-3 size-5"/><Copy v-else class="absolute right-3 top-3 size-5 text-gray-500 hover:text-gray-400 cursor-pointer" @click="copy"/><span v-html="hlCode"></span></pre>
+      class="bg-black text-slate-400 p-2 rounded overflow-scroll no-scrollbar"
+    ><Check v-if="copied" class="absolute right-3 top-3 size-5"/><Copy v-else class="absolute right-3 top-3 size-5 text-slate-500 hover:text-slate-400 cursor-pointer" @click="copy"/><span v-html="hlCode"></span></pre>
   </div>
 </template>

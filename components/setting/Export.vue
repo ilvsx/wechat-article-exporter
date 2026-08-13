@@ -15,8 +15,8 @@
 
               <template #panel>
                 <div class="p-4">
-                  <p class="my-2 text-sm text-gray-500">
-                    使用 <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded font-mono text-xs">${变量名}</code> 的格式插入变量，例如：<code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded font-mono text-xs">${YYYY}-${MM}-${DD}_${title}</code>
+                  <p class="my-2 text-sm text-slate-11">
+                    使用 <code class="px-1 py-0.5 bg-slate-3 dark:bg-slate-800 rounded font-mono text-xs">${变量名}</code> 的格式插入变量，例如：<code class="px-1 py-0.5 bg-slate-3 dark:bg-slate-800 rounded font-mono text-xs">${YYYY}-${MM}-${DD}_${title}</code>
                   </p>
                   <p class="my-2 font-medium">支持的变量：</p>
                   <table class="w-full border-collapse border">
@@ -40,22 +40,22 @@
             </UPopover>
           </span>
         </p>
-        <p class="text-sm mb-2 text-gray-500">影响 <span class="font-mono">html/txt/markdown/word/pdf</span> 的导出</p>
+        <p class="text-sm mb-2 text-slate-11">影响 <span class="font-mono">html/txt/markdown/word/pdf</span> 的导出</p>
         <UInput
           placeholder="目录名格式"
           class="w-[600px] font-mono"
           name="dirname"
           v-model="preferences.exportConfig.dirname"
         />
-        <p class="mt-2 text-sm text-gray-500">
+        <p class="mt-2 text-sm text-slate-11">
           <span class="mr-1">预览:</span>
-          <span class="font-mono text-gray-700 dark:text-gray-300">{{ dirnamePreview }}</span>
+          <span class="font-mono text-slate-12 dark:text-slate-300">{{ dirnamePreview }}</span>
         </p>
       </div>
       <div>
         <p class="mb-2 flex items-center gap-3">
           <span>目录名最大长度:</span>
-          <span class="text-xs text-gray-500">(0表示不限制)</span>
+          <span class="text-xs text-slate-11">(0表示不限制)</span>
           <UInput
             class=""
             placeholder="目录名最大长度"

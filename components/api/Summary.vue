@@ -72,7 +72,7 @@ function fmtDate(ms?: number | null) {
 <template>
   <div class="space-y-8">
     <!-- 简介 -->
-    <p class="text-base leading-relaxed text-gray-600 dark:text-gray-300">
+    <p class="text-base leading-relaxed text-slate-11 dark:text-slate-300">
       为了方便第三方开发人员进行个性化定制，本网站将其主要功能（包括但不限于公众号查询、历史文章列表查询、文章下载等）提供
       API 以供接入。
     </p>
@@ -97,10 +97,10 @@ function fmtDate(ms?: number | null) {
         <span>密钥</span>
         <UBadge color="gray" variant="soft" size="xs" class="ml-1">登录集成 · 免费</UBadge>
       </h3>
-      <ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed marker:text-gray-400">
+      <ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed marker:text-slate-9">
         <li>
           查询类接口需携带密钥调用（下载接口无需）。密钥可通过两种方式传输：
-          <div class="mt-1 space-y-0.5 text-gray-600 dark:text-gray-400">
+          <div class="mt-1 space-y-0.5 text-slate-11 dark:text-slate-400">
             <p>a. 请求头 <code class="rounded bg-gray-100 px-1 font-mono text-rose-500 dark:bg-gray-800">X-Auth-Key</code></p>
             <p>
               b. name 为 <code class="rounded bg-gray-100 px-1 font-mono text-rose-500 dark:bg-gray-800">auth-key</code> 的
@@ -115,7 +115,7 @@ function fmtDate(ms?: number | null) {
         查询 API 密钥 (确保当前登录信息有效)
       </UButton>
       <div v-if="authKey" class="mt-4">
-        <p class="mb-2 text-sm text-gray-500">当前密钥：</p>
+        <p class="mb-2 text-sm text-slate-11">当前密钥：</p>
         <CodeSegment :code="authKey" lang="text" class="max-w-xl" />
       </div>
     </section>
@@ -130,22 +130,22 @@ function fmtDate(ms?: number | null) {
 
       <div class="space-y-4">
         <!-- 频率对比表 -->
-        <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+        <div class="overflow-hidden rounded-xl border border-slate-4 dark:border-slate-800">
           <table class="w-full text-sm">
-            <thead class="bg-gray-50 text-xs text-gray-500 dark:bg-gray-900">
+            <thead class="bg-slate-3 text-xs text-slate-11 dark:bg-slate-900">
               <tr>
                 <th class="px-4 py-2.5 text-left font-medium">接口</th>
                 <th class="px-4 py-2.5 text-center font-medium">游客 · 免费</th>
                 <th class="px-4 py-2.5 text-center font-medium text-amber-600 dark:text-amber-400">会员</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+            <tbody class="divide-y divide-slate-4 dark:divide-slate-800">
               <tr v-for="t in tiers" :key="t.name">
                 <td class="px-4 py-3">
                   <p class="font-medium">{{ t.name }}</p>
-                  <p class="mt-0.5 text-xs text-gray-400">{{ t.desc }}</p>
+                  <p class="mt-0.5 text-xs text-slate-9">{{ t.desc }}</p>
                 </td>
-                <td class="px-4 py-3 text-center text-gray-600 dark:text-gray-300">{{ t.guest }}</td>
+                <td class="px-4 py-3 text-center text-slate-11 dark:text-slate-300">{{ t.guest }}</td>
                 <td class="px-4 py-3 text-center font-semibold text-amber-700 dark:text-amber-300">{{ t.member }}</td>
               </tr>
             </tbody>
@@ -159,14 +159,14 @@ function fmtDate(ms?: number | null) {
               >X-Api-Token: 你的令牌</code
             >
           </p>
-          <p class="text-gray-500">令牌到期后自动降级为游客速率。查询类接口仍需登录密钥（X-Auth-Key）。</p>
+          <p class="text-slate-11">令牌到期后自动降级为游客速率。查询类接口仍需登录密钥（X-Auth-Key）。</p>
         </div>
       </div>
 
       <!-- 查询我的令牌 -->
       <div class="mt-5 rounded-xl border border-gray-200 p-4 dark:border-gray-800">
         <p class="mb-2 flex items-center gap-2 text-sm font-medium">
-          <UIcon name="i-lucide:search" class="size-4 text-gray-400" />
+          <UIcon name="i-lucide:search" class="size-4 text-slate-9" />
           查询我的令牌
         </p>
         <div class="flex flex-col gap-2 sm:flex-row">
@@ -184,9 +184,9 @@ function fmtDate(ms?: number | null) {
             <p class="flex items-center gap-1.5 font-medium text-green-600 dark:text-green-400">
               <UIcon name="i-lucide:badge-check" class="size-4" />会员有效
             </p>
-            <div class="mt-1.5 space-y-0.5 text-gray-600 dark:text-gray-300">
+            <div class="mt-1.5 space-y-0.5 text-slate-11 dark:text-slate-300">
               <p>剩余天数：<span class="font-medium">{{ memberInfo.remainingDays }}</span> 天</p>
-              <p>到期时间：{{ fmtDate(memberInfo.expiresAt) }} <span class="text-xs text-gray-400">北京时间</span></p>
+              <p>到期时间：{{ fmtDate(memberInfo.expiresAt) }} <span class="text-xs text-slate-9">北京时间</span></p>
               <p v-if="memberInfo.createdAt">开通时间：{{ fmtDate(memberInfo.createdAt) }}</p>
             </div>
           </template>
@@ -194,13 +194,13 @@ function fmtDate(ms?: number | null) {
             <p class="flex items-center gap-1.5 font-medium text-rose-500">
               <UIcon name="i-lucide:alert-triangle" class="size-4" />会员已过期
             </p>
-            <div class="mt-1.5 space-y-0.5 text-gray-600 dark:text-gray-300">
-              <p>到期时间：{{ fmtDate(memberInfo.expiresAt) }} <span class="text-xs text-gray-400">北京时间</span></p>
+            <div class="mt-1.5 space-y-0.5 text-slate-11 dark:text-slate-300">
+              <p>到期时间：{{ fmtDate(memberInfo.expiresAt) }} <span class="text-xs text-slate-9">北京时间</span></p>
               <p class="text-rose-500">请续费后恢复会员额度。</p>
             </div>
           </template>
           <template v-else>
-            <p class="flex items-center gap-1.5 font-medium text-gray-500">
+            <p class="flex items-center gap-1.5 font-medium text-slate-11">
               <UIcon name="i-lucide:x-circle" class="size-4" />未找到该令牌（无效或已过期清理）
             </p>
           </template>

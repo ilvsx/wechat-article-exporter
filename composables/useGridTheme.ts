@@ -11,7 +11,7 @@ export function useGridTheme() {
 
   const theme = computed(() => {
     const base = colorMode.value === 'dark' ? darkGridTheme : lightGridTheme;
-    const density = (preferences.value as Preferences).tableDensity;
+    const density = (preferences.value as unknown as Preferences).tableDensity;
     if (density === 'comfortable') {
       // 舒适密度：行高/表头放宽
       return base.withParams({ rowHeight: 44, headerHeight: 48 });

@@ -153,7 +153,7 @@ function submit() {
                     />
                     <span>{{ api.name }}</span>
                   </p>
-                  <p class="text-gray-400 font-mono">{{ api.description }}</p>
+                  <p class="text-slate-9 font-mono">{{ api.description }}</p>
                 </div>
               </template>
             </USelectMenu>
@@ -163,7 +163,7 @@ function submit() {
             <div>
               <p class="font-semibold mb-2">请求URL:</p>
               <p class="font-mono border p-2 rounded-md">
-                <span class="text-gray-400">{{ host }}</span>
+                <span class="text-slate-9">{{ host }}</span>
                 <span class="font-semibold">{{ selectedApi.url }}</span>
               </p>
             </div>
@@ -174,7 +174,7 @@ function submit() {
             <div v-if="membershipEnabled">
               <p class="font-semibold mb-2">
                 会员令牌 (X-Api-Token)：
-                <span class="text-xs font-normal text-gray-400">可选，填写后按会员额度调用，留空按游客</span>
+                <span class="text-xs font-normal text-slate-9">可选，填写后按会员额度调用，留空按游客</span>
               </p>
               <UInput v-model="apiToken" placeholder="粘贴会员令牌 (X-Api-Token)" />
             </div>

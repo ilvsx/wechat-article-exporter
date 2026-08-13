@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import type { IndexableType, IndexableTypeArrayReadonly } from 'dexie';
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
 import ConfirmModal from '~/components/modal/Confirm.vue';
@@ -17,7 +18,7 @@ interface BackupManifest {
 
 interface TableDump {
   name: string;
-  keys: unknown[];
+  keys: IndexableType[];
   rows: Record<string, unknown>[];
 }
 
@@ -117,8 +118,9 @@ export function useBackup() {
             }
           });
 
-          // 逐表恢复
+          // 逐表恢复（跳过当前数据库不存在的表，兼容备份版本差异）
           for (const { name } of manifest.tables) {
+            if (!db.tables.some(table => table.name === name)) continue;
             const dumpFile = zip.file(`tables/${name}.json`);
             if (!dumpFile) continue;
             const dump = JSON.parse(await dumpFile.async('text')) as TableDump;
@@ -137,7 +139,9 @@ export function useBackup() {
               rows.push(restored);
             }
             if (rows.length > 0) {
-              await db.table(name).bulkPut(rows, dump.keys);
+              const table = db.table<Record<string, unknown>, IndexableType>(name);
+              // primaryKeys 元素实际为标量主键，cast 消除联合类型的保守限制
+              await table.bulkPut(rows, dump.keys as IndexableTypeArrayReadonly);
             }
           }
 

@@ -36,7 +36,7 @@ const host = window.location.protocol + '//' + window.location.host;
 <template>
   <div class="space-y-5">
     <h2 class="flex items-center space-x-3 text-base font-semibold py-2">
-      <span :class="offline ? 'line-through text-gray-400 dark:text-gray-500' : ''">{{ index }}. {{ name }}</span>
+      <span :class="offline ? 'line-through text-slate-9 dark:text-slate-500' : ''">{{ index }}. {{ name }}</span>
       <UBadge v-if="offline" color="red" variant="subtle" size="xs">已下线</UBadge>
       <ApiDebugModal v-else :initial-selected="name" />
     </h2>
@@ -50,8 +50,8 @@ const host = window.location.protocol + '//' + window.location.host;
     </div>
     <div v-if="rateLimit && membershipEnabled" class="flex flex-wrap items-center gap-2 text-sm">
       <span class="font-semibold">调用频率:</span>
-      <span class="inline-flex items-center gap-1.5 rounded-md bg-gray-100 px-2 py-0.5 dark:bg-gray-800">
-        <span class="text-gray-500">游客</span>
+      <span class="inline-flex items-center gap-1.5 rounded-md bg-slate-3 px-2 py-0.5 dark:bg-slate-800">
+        <span class="text-slate-11">游客</span>
         <span class="font-medium">{{ rateLimit.guest }}</span>
       </span>
       <span
@@ -69,7 +69,7 @@ const host = window.location.protocol + '//' + window.location.host;
     <div>
       <p class="font-semibold mb-2">请求URL:</p>
       <p class="font-mono border p-2 rounded-md">
-        <span class="text-gray-400">{{ host }}</span>
+        <span class="text-slate-9">{{ host }}</span>
         <span class="font-semibold">{{ url }}</span>
       </p>
     </div>

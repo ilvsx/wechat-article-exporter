@@ -36,7 +36,7 @@ function onCancel() {
 
       <template #footer>
         <div class="flex justify-end space-x-3">
-          <UButton color="white" class="px-3" @click="onCancel">取消</UButton>
+          <UButton color="gray" class="px-3" @click="onCancel">取消</UButton>
           <UButton color="rose" class="px-3" @click="onConfirm">确定</UButton>
         </div>
       </template>

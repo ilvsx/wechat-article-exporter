@@ -1,9 +1,9 @@
 <template>
-  <USlideover v-model="isOpen" side="left" :ui="{ overlay: { background: 'bg-zinc-400/75' } }">
+  <USlideover v-model="isOpen" side="left" :ui="{ overlay: { background: 'bg-slate-950/50' } }">
     <div
-      class="rounded-lg divide-y divide-gray-100 dark:divide-gray-800 shadow bg-white dark:bg-gray-900 flex flex-col flex-1 overflow-y-scroll"
+      class="rounded-lg divide-y divide-slate-4 dark:divide-slate-800 shadow bg-white dark:bg-slate-900 flex flex-col flex-1 overflow-y-scroll"
     >
-      <div class="sticky top-0 bg-white py-4 px-2 shadow">
+      <div class="sticky top-0 bg-white py-4 px-2 shadow dark:bg-slate-900">
         <SearchAccountForm v-model="accountQuery" @search="searchAccount" />
       </div>
       <div class="flex-1">
@@ -18,7 +18,7 @@
             <div class="flex-1">
               <div class="flex justify-between">
                 <p class="font-semibold">{{ account.nickname }}</p>
-                <p class="text-sky-500 font-medium">
+                <p class="text-blue-600 font-medium">
                   {{ ACCOUNT_TYPE[account.service_type] }}
                 </p>
               </div>
