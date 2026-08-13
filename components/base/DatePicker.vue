@@ -29,7 +29,7 @@ const attrs = {
   transparent: true,
   borderless: true,
   locale: 'zh-CN',
-  color: 'gray',
+  color: 'primary',
   'is-dark': { selector: 'html', darkClass: 'dark' },
   'first-day-of-week': 2,
   'min-date': dayjs.unix(MP_ORIGIN_TIMESTAMP).toDate(),

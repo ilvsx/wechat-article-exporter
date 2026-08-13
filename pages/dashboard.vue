@@ -18,7 +18,7 @@
 
         <!-- 页面容器 -->
         <div class="flex-1 overflow-hidden bg-slate-2 dark:bg-slate-950">
-          <NuxtPage />
+          <NuxtPage :transition="{ name: 'page', mode: 'out-in', duration: 120 }" />
         </div>
       </div>
     </div>

@@ -16,6 +16,7 @@ import { getArticleList } from '~/apis';
 import GlobalSearchAccountDialog from '~/components/global/SearchAccountDialog.vue';
 import GridAccountActions from '~/components/grid/AccountActions.vue';
 import GridLoadProgress from '~/components/grid/LoadProgress.vue';
+import GridStatusBar from '~/components/grid/StatusBar.vue';
 import ConfirmModal from '~/components/modal/Confirm.vue';
 import LoginModal from '~/components/modal/Login.vue';
 import toastFactory from '~/composables/toast';
@@ -28,7 +29,7 @@ import { getAllInfo, getInfoCache, importMpAccounts, type MpAccount, updateInfoC
 import type { AccountManifest } from '~/types/account';
 import type { Preferences } from '~/types/preferences';
 import { exportAccountJsonFile } from '~/utils/exporter';
-import { createBooleanColumnFilterParams, createDateColumnFilterParams } from '~/utils/grid';
+import { createBooleanColumnFilterParams, createDateColumnFilterParams, saveDefaultColumnState } from '~/utils/grid';
 
 useHead({
   title: `公众号管理 | ${websiteName}`,
@@ -364,6 +365,15 @@ const gridOptions: GridOptions = defu(
   {
     getRowId: (params: GetRowIdParams) => String(params.data.fakeid),
     theme: gridTheme.value,
+    context: { columnStateKey: 'agGridColumnState-account' },
+    statusBar: {
+      statusPanels: [
+        {
+          statusPanel: GridStatusBar,
+          align: 'left',
+        },
+      ],
+    },
   },
   sharedGridOptions
 );
@@ -375,6 +385,8 @@ watch(gridTheme, theme => {
 function onGridReady(params: GridReadyEvent) {
   gridApi.value = params.api;
 
+  // 保存默认列状态快照（须在 restoreColumnState 之前），供「重置列」恢复
+  saveDefaultColumnState('agGridColumnState-account', params.api.getColumnState());
   restoreColumnState();
   refresh();
 }

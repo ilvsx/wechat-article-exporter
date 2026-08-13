@@ -107,6 +107,21 @@
         </UPopover>
       </div>
     </div>
+
+    <div class="border border-slate-4 dark:border-slate-800 p-3 rounded-md mt-5">
+      <p class="mb-3 text-base font-semibold text-slate-12 dark:text-slate-100">表格显示</p>
+      <div class="flex gap-3">
+        <URadioGroup
+          v-model="preferences.tableDensity"
+          :options="[
+            { value: 'compact', label: '紧凑' },
+            { value: 'comfortable', label: '舒适' },
+          ]"
+          value-attribute="value"
+          option-attribute="label"
+        />
+      </div>
+    </div>
   </UCard>
 </template>
 

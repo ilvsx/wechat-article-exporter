@@ -20,6 +20,9 @@ export interface Preferences {
 
   syncDateRange: '24h' | '1d' | '3d' | '7d' | '1m' | '3m' | '6m' | '1y' | 'all' | 'point';
   syncDatePoint: number;
+
+  // 表格密度
+  tableDensity: 'compact' | 'comfortable';
 }
 
 interface ExportConfig {

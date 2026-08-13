@@ -1,4 +1,5 @@
 import type {
+  ColumnState,
   IDateFilterParams,
   ISetFilterParams,
   ITextFilterParams,
@@ -6,6 +7,19 @@ import type {
   ValueGetterParams,
 } from 'ag-grid-community';
 import type { Article } from '~/types/article';
+
+// 各页默认列状态快照（首次 grid-ready 时保存，供「重置列」恢复）
+const defaultColumnStates = new Map<string, ColumnState[]>();
+
+export function saveDefaultColumnState(key: string, state: ColumnState[]): void {
+  if (!defaultColumnStates.has(key)) {
+    defaultColumnStates.set(key, state);
+  }
+}
+
+export function getDefaultColumnState(key: string): ColumnState[] | undefined {
+  return defaultColumnStates.get(key);
+}
 
 // 布尔类型的列过滤参数
 export function createBooleanColumnFilterParams(trueLabel: string, falseLabel: string): ISetFilterParams<any, boolean> {

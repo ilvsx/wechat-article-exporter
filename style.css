@@ -45,6 +45,16 @@ body {
     scrollbar-width: none; /* Firefox */
 }
 
+/* ============ 页面过渡 ============ */
+.page-enter-active,
+.page-leave-active {
+    transition: opacity 120ms ease-out;
+}
+.page-enter-from,
+.page-leave-to {
+    opacity: 0;
+}
+
 /* ============ AG Grid 细节 ============ */
 /* 已删除文章行：amber 底（亮/暗双变体） */
 .deleted-row {

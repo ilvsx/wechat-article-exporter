@@ -34,7 +34,7 @@ import { getMetadataCache, type Metadata } from '~/store/v2/metadata';
 import type { Preferences } from '~/types/preferences';
 import type { AppMsgExWithFakeID } from '~/types/types';
 import type { ArticleMetadata } from '~/utils/download/types';
-import { createBooleanColumnFilterParams, createDateColumnFilterParams } from '~/utils/grid';
+import { createBooleanColumnFilterParams, createDateColumnFilterParams, saveDefaultColumnState } from '~/utils/grid';
 
 useHead({
   title: `文章下载 | ${websiteName}`,
@@ -341,6 +341,7 @@ const gridOptions: GridOptions = defu(
   {
     getRowId: (params: GetRowIdParams) => `${params.data.fakeid}:${params.data.aid}`,
     theme: gridTheme.value,
+    context: { columnStateKey: 'agGridColumnState' },
     statusBar: {
       statusPanels: [
         {
@@ -360,6 +361,8 @@ watch(gridTheme, theme => {
 function onGridReady(params: GridReadyEvent) {
   gridApi.value = params.api;
 
+  // 保存默认列状态快照（须在 restoreColumnState 之前），供「重置列」恢复
+  saveDefaultColumnState('agGridColumnState', params.api.getColumnState());
   restoreColumnState();
 }
 
