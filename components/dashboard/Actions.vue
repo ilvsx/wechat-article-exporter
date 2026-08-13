@@ -38,28 +38,6 @@ function toggleColorMode() {
 
 <template>
   <ul class="hidden md:flex items-center gap-1">
-    <!-- 「公号三刀」 -->
-    <li>
-      <UTooltip text="可尝试「公号三刀」抓取非群发等少量文章">
-        <!-- 「公号三刀」logo（圆角方块 + 三道刃）的单色线稿版，与相邻 lucide 图标风格统一 -->
-        <UButton square ghost color="gray" @click="gotoLink('https://github.com/zoro-build/wechat')">
-          <svg
-            class="size-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <rect x="3" y="3" width="18" height="18" rx="4" />
-            <path d="M8 7.5v9M12 7.5v9M16 7.5v9" />
-          </svg>
-        </UButton>
-      </UTooltip>
-    </li>
-
     <!-- Credential -->
     <li>
       <CredentialsDialog
