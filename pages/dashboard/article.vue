@@ -735,7 +735,7 @@ const exportScopeOptions = computed(() => [
   { label: `当前页 (${pageRowCount.value})`, value: 'page' },
   { label: `筛选结果 (${filteredRowCount.value})`, value: 'filtered' },
 ]);
-const needsContentFormats = new Set(['html', 'text', 'markdown', 'word', 'pdf']);
+const needsContentFormats = new Set(['html', 'text', 'markdown']);
 
 // 导出弹窗:范围 + 格式一次选定
 const exportDialogOpen = ref(false);
@@ -745,8 +745,6 @@ const exportFormats: { type: ExportType; label: string }[] = [
   { type: 'html', label: 'HTML' },
   { type: 'text', label: 'Txt' },
   { type: 'markdown', label: 'Markdown' },
-  { type: 'word', label: 'Word (内测中)' },
-  { type: 'pdf', label: 'PDF (内测中)' },
 ];
 const exportFormatPref = useLocalStorage<ExportType>('article:exportFormat', 'excel');
 
