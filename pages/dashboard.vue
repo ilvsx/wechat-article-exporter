@@ -1,8 +1,5 @@
 <template>
   <div class="flex flex-col h-screen">
-    <!-- 全局提示（横跨侧边栏与顶部操作栏之上）-->
-    <SiteNotice />
-
     <div class="flex flex-1 min-h-0">
       <!-- 左侧边栏 -->
       <SideBar />
@@ -28,5 +25,4 @@
 <script setup lang="ts">
 import GlobalActions from '~/components/dashboard/Actions.vue';
 import SideBar from '~/components/dashboard/SideBar.vue';
-import SiteNotice from '~/components/global/SiteNotice.vue';
 </script>
