@@ -4,6 +4,21 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* 键盘焦点环（原生元素；Nuxt UI 组件自带 ring，不冲突） */
+:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+.dark :focus-visible {
+    outline-color: #3b82f6;
+}
+
+/* AG Grid 数字等宽对齐（数字列不再依赖 font-mono） */
+.ag-theme-quartz {
+    font-variant-numeric: tabular-nums;
+}
+
 /* 选中文本：蓝底白字（替代默认黄底黑字） */
 ::selection {
     background-color: #dbeafe;

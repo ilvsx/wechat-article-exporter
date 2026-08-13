@@ -3,7 +3,7 @@
     <div
       v-for="account in accountMetrics"
       :key="account.name"
-      class="relative w-full max-w-2xl border p-5 rounded-md hover:shadow"
+      class="relative w-full max-w-2xl border p-5 rounded-md hover:shadow dark:border-slate-800 dark:hover:ring-1 dark:hover:ring-white/10"
     >
       <h3 class="mb-3 text-base font-semibold text-slate-12 dark:text-slate-100" :title="account.name">
         节点: {{ account.domain }}

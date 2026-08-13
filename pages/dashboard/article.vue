@@ -94,7 +94,7 @@ const columnDefs = ref<ColDef[]>([
     filter: 'agTextColumnFilter',
     minWidth: 150,
     initialHide: true,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '链接',
@@ -147,7 +147,7 @@ const columnDefs = ref<ColDef[]>([
     },
     minWidth: 180,
     initialHide: true,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '发布时间',
@@ -159,7 +159,7 @@ const columnDefs = ref<ColDef[]>([
       return new Date(params.getValue('update_time') * 1000);
     },
     minWidth: 180,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '是否已删除',
@@ -209,7 +209,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     filter: 'agNumberColumnFilter',
     minWidth: 100,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '点赞',
@@ -217,7 +217,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     filter: 'agNumberColumnFilter',
     minWidth: 100,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '分享',
@@ -225,7 +225,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     filter: 'agNumberColumnFilter',
     minWidth: 100,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '喜欢',
@@ -233,7 +233,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     filter: 'agNumberColumnFilter',
     minWidth: 100,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '留言',
@@ -241,7 +241,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     filter: 'agNumberColumnFilter',
     minWidth: 100,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     field: 'author_name',
@@ -279,7 +279,7 @@ const columnDefs = ref<ColDef[]>([
     filter: 'agNumberColumnFilter',
     minWidth: 120,
     initialHide: true,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '文章类型',
@@ -302,7 +302,7 @@ const columnDefs = ref<ColDef[]>([
     comparator: (a, b) => a - b,
     minWidth: 150,
     initialHide: true,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '所属合集',

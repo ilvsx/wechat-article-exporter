@@ -253,7 +253,7 @@ const columnDefs = ref<ColDef[]>([
     sort: 'desc',
     minWidth: 180,
     initialHide: true,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     colId: 'update_time',
@@ -266,7 +266,7 @@ const columnDefs = ref<ColDef[]>([
       return new Date(params.getValue('update_time') * 1000);
     },
     minWidth: 180,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     colId: 'total_count',
@@ -275,7 +275,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     cellRenderer: 'agAnimateShowChangeCellRenderer',
     filter: 'agNumberColumnFilter',
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
     minWidth: 150,
   },
   {
@@ -285,7 +285,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     cellRenderer: 'agAnimateShowChangeCellRenderer',
     filter: 'agNumberColumnFilter',
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
     minWidth: 180,
   },
   {
@@ -295,7 +295,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     cellRenderer: 'agAnimateShowChangeCellRenderer',
     filter: 'agNumberColumnFilter',
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
     minWidth: 180,
     initialHide: true,
   },

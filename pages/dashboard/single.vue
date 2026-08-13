@@ -74,7 +74,7 @@ const columnDefs = ref<ColDef[]>([
     filter: 'agTextColumnFilter',
     minWidth: 220,
     initialHide: true,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '标题',
@@ -126,7 +126,7 @@ const columnDefs = ref<ColDef[]>([
     },
     flex: 1,
     minWidth: 180,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '内容已下载',
@@ -152,7 +152,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     filter: 'agNumberColumnFilter',
     minWidth: 100,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '点赞',
@@ -160,7 +160,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     filter: 'agNumberColumnFilter',
     minWidth: 100,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '分享',
@@ -168,7 +168,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     filter: 'agNumberColumnFilter',
     minWidth: 100,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '喜欢',
@@ -176,7 +176,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     filter: 'agNumberColumnFilter',
     minWidth: 100,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '留言',
@@ -184,7 +184,7 @@ const columnDefs = ref<ColDef[]>([
     cellDataType: 'number',
     filter: 'agNumberColumnFilter',
     minWidth: 100,
-    cellClass: 'flex justify-center items-center font-mono',
+    cellClass: 'flex justify-center items-center',
   },
   {
     headerName: '操作',
