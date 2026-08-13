@@ -70,7 +70,8 @@ export const sharedGridOptions: GridOptions = {
   rowSelection: {
     mode: 'multiRow',
     headerCheckbox: true,
-    selectAll: 'filtered',
+    // 表头勾选仅作用于当前分页(未分页时等价于全部行)
+    selectAll: 'currentPage',
   },
   theme: lightGridTheme,
 };
