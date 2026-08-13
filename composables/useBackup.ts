@@ -140,8 +140,13 @@ export function useBackup() {
             }
             if (rows.length > 0) {
               const table = db.table<Record<string, unknown>, IndexableType>(name);
-              // primaryKeys 元素实际为标量主键，cast 消除联合类型的保守限制
-              await table.bulkPut(rows, dump.keys as IndexableTypeArrayReadonly);
+              if (table.schema.primKey.keyPath) {
+                // inbound key 表:主键来自行内字段(url/fakeid 等),传 keys 会抛错
+                await table.bulkPut(rows);
+              } else {
+                // outbound key 表:主键在行外(article 的 fakeid:aid 等),必须回传备份的 keys
+                await table.bulkPut(rows, dump.keys as IndexableTypeArrayReadonly);
+              }
             }
           }
 
