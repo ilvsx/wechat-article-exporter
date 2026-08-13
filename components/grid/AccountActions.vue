@@ -39,7 +39,13 @@ const isLoading = computed(() => props.params.isSyncing && props.params.node.id 
   <div class="flex items-center justify-center gap-3">
     <template v-if="isLoading">
       <UTooltip text="停止同步" :popper="{ placement: 'top' }">
-        <UButton color="green" size="xs" variant="solid" class="transition-all duration-150 hover:scale-105" @click="stop">
+        <UButton
+          color="green"
+          size="xs"
+          variant="solid"
+          class="transition-all duration-150 hover:scale-105 hover:brightness-110"
+          @click="stop"
+        >
           <Loader :size="14" class="animate-spin" />
           停止</UButton
         >
@@ -52,7 +58,7 @@ const isLoading = computed(() => props.params.isSyncing && props.params.node.id 
           color="blue"
           size="xs"
           :disabled="isDisabled"
-          class="transition-all duration-150 hover:scale-110 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400"
+          class="transition-all duration-150 hover:scale-110 hover:brightness-110"
           @click="sync"
         ></UButton>
       </UTooltip>

@@ -61,7 +61,7 @@ export const gridLightParams = {
   wrapperBorder: true,
   sidePanelBorder: true,
   oddRowBackgroundColor: '#fafafc',
-  rowHoverColor: slateNeutral[100],
+  rowHoverColor: 'rgba(59, 130, 246, 0.07)',
   selectedRowBackgroundColor: primary[50],
   rangeSelectionBackgroundColor: primary[100],
   accentColor: primary[600],
