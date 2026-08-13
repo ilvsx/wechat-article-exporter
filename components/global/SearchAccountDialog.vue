@@ -22,7 +22,7 @@
                   {{ ACCOUNT_TYPE[account.service_type] }}
                 </p>
               </div>
-              <p class="text-gray-500 text-sm">微信号: {{ account.alias || '未设置' }}</p>
+              <p class="text-slate-11 text-sm">微信号: {{ account.alias || '未设置' }}</p>
               <p class="text-sm mt-2">{{ account.signature }}</p>
             </div>
           </li>

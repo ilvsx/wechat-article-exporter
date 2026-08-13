@@ -25,6 +25,7 @@ const lightThemeParams = {
   columnBorder: false, // 去竖向网格线噪音，只留行线
   borderRadius: 8,
   wrapperBorder: true,
+  sidePanelBorder: true,
   oddRowBackgroundColor: '#fafafc', // ≈ slate-2
   rowHoverColor: '#f1f5f9', // slate-100
   selectedRowBackgroundColor: '#eff6ff', // blue-50

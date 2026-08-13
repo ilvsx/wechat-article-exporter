@@ -194,7 +194,7 @@ function submit() {
                     :placeholder="p.label + (p.remark ? '，' + p.remark : '')"
                   />
                 </UFormGroup>
-                <UButton type="submit" color="black" class="px-5" :loading="btnLoading">提交</UButton>
+                <UButton type="submit" color="primary" class="px-5" :loading="btnLoading">提交</UButton>
               </UForm>
             </div>
           </div>

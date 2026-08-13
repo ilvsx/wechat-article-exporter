@@ -83,7 +83,7 @@
         </div>
         <div v-else-if="albumBaseInfo" class="relative max-w-2xl mx-auto bg-white dark:bg-slate-900">
           <!-- banner -->
-          <div class="px-5 py-7 banner">
+          <div class="px-5 py-7 banner rounded-t-lg">
             <h2 class="text-2xl text-white font-bold"># {{ albumBaseInfo.title }}</h2>
           </div>
           <div class="sticky top-0 px-5 py-3 bg-white border-b dark:bg-slate-900 dark:border-slate-800">

@@ -35,7 +35,7 @@ const host = window.location.protocol + '//' + window.location.host;
 
 <template>
   <div class="space-y-5">
-    <h2 class="flex items-center space-x-3 text-2xl font-semibold font-serif py-2">
+    <h2 class="flex items-center space-x-3 text-base font-semibold py-2">
       <span :class="offline ? 'line-through text-gray-400 dark:text-gray-500' : ''">{{ index }}. {{ name }}</span>
       <UBadge v-if="offline" color="red" variant="subtle" size="xs">已下线</UBadge>
       <ApiDebugModal v-else :initial-selected="name" />
@@ -46,7 +46,7 @@ const host = window.location.protocol + '//' + window.location.host;
 
     <div>
       <p class="font-semibold mb-2">简要描述</p>
-      <p class="font-serif">{{ description }}</p>
+      <p class="text-sm text-slate-11">{{ description }}</p>
     </div>
     <div v-if="rateLimit && membershipEnabled" class="flex flex-wrap items-center gap-2 text-sm">
       <span class="font-semibold">调用频率:</span>

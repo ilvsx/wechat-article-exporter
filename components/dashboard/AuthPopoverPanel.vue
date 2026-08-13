@@ -96,7 +96,7 @@ const actions: Action[] = [
 
     <!-- Providers -->
     <div v-else class="py-5 flex flex-col p-3 min-w-60">
-      <p class="font-serif">Log into with</p>
+      <p class="text-sm text-slate-11">使用以下方式登录</p>
       <div class="space-y-3 my-3">
         <!-- GitHub -->
         <UButton @click="loginWithGitHub" block color="white" size="xl" icon="i-logos:github-icon">GitHub</UButton>

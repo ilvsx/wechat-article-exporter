@@ -5,16 +5,18 @@
       :key="account.name"
       class="relative w-full max-w-2xl border p-5 rounded-md hover:shadow"
     >
-      <h3 class="text-xl text-gray-600 font-mono mb-3" :title="account.name">节点: {{ account.domain }}</h3>
-      <UMeter v-if="account.metric" :value="account.metric.dailyRequests" :max="100_000" color="orange">
+      <h3 class="mb-3 text-base font-semibold text-slate-12 dark:text-slate-100" :title="account.name">
+        节点: {{ account.domain }}
+      </h3>
+      <UMeter v-if="account.metric" :value="account.metric.dailyRequests" :max="100_000" color="primary">
         <template #indicator>
-          <div class="flex justify-between items-center text-gray-400">
+          <div class="flex justify-between items-center text-slate-11 dark:text-slate-400">
             <span>今日请求量</span>
             <p>
-              <span class="text-base text-green-500 font-semibold font-mono">
+              <span class="text-base font-semibold text-slate-12 tabular-nums dark:text-slate-200">
                 {{ Math.round((Math.min(account.metric.dailyRequests, 100_000) / 100_000) * 100) }}%
               </span>
-              <span class="font-mono text-xs">
+              <span class="text-xs tabular-nums">
                 ({{ account.metric === null ? '未知' : account.metric.dailyRequests.toLocaleString('en-US') }}/{{
                   (100_000).toLocaleString('en-US')
                 }})
@@ -23,18 +25,18 @@
           </div>
         </template>
       </UMeter>
-      <span v-else>状态未知</span>
+      <span v-else class="text-sm text-slate-11">状态未知</span>
       <div class="flex items-center gap-3 absolute right-5 top-5">
         <div class="size-5">
           <UIcon
             v-if="account.copied"
             name="i-lucide:check"
-            class="size-5 text-gray-500 hover:text-gray-400 cursor-pointer"
+            class="size-5 text-slate-11 hover:text-slate-9 cursor-pointer"
           />
           <UTooltip v-else text="复制节点地址">
             <UIcon
               name="i-lucide:copy"
-              class="size-5 text-gray-500 hover:text-gray-400 cursor-pointer"
+              class="size-5 text-slate-11 hover:text-slate-9 cursor-pointer"
               @click="copyAddress(account)"
             />
           </UTooltip>
@@ -42,17 +44,17 @@
       </div>
       <div class="mt-5">
         <header class="flex justify-between items-center mb-2">
-          <h3 class="text-base text-gray-500">统计信息</h3>
+          <h3 class="text-sm text-slate-11 dark:text-slate-400">统计信息</h3>
           <div class="size-5">
             <UIcon
               v-if="account.fetchAnalyticsLoading"
               name="i-lucide:loader"
-              class="size-5 text-gray-400 animate-spin"
+              class="size-5 text-slate-11 animate-spin"
             />
             <UTooltip v-else text="节点使用信息">
               <UIcon
                 name="i-lucide:activity"
-                class="size-5 text-gray-500 hover:text-gray-400 cursor-pointer"
+                class="size-5 text-slate-11 hover:text-slate-9 cursor-pointer"
                 @click="nodeAnalytics(account)"
               />
             </UTooltip>
@@ -62,20 +64,20 @@
         <div
           v-for="item in account.topClientIPs"
           :key="item.clientIP"
-          class="relative flex justify-between items-center text-gray-400 hover:bg-gray-100 my-2 px-2 py-1 rounded overflow-hidden"
+          class="relative flex justify-between items-center text-slate-11 my-2 px-2 py-1 rounded overflow-hidden hover:bg-slate-3"
         >
           <!-- 灰色背景条（全宽） -->
-          <div class="absolute inset-0 bg-gray-100 rounded"></div>
+          <div class="absolute inset-0 bg-slate-3 dark:bg-slate-800 rounded"></div>
 
           <!-- 蓝色进度条（根据 count / total 动态宽度） -->
           <div
             :style="{ width: account.total ? (item.count / account.total) * 100 + '%' : '0%' }"
-            class="absolute inset-y-0 left-0 bg-blue-700 rounded-l"
+            class="absolute inset-y-0 left-0 bg-blue-600/10 dark:bg-blue-500/20 rounded-l"
           ></div>
 
           <!-- IP 和计数文字（在最上层） -->
           <p class="relative z-10 font-mono text-sm">{{ item.clientIP }}</p>
-          <p class="relative z-10 font-mono text-sm">
+          <p class="relative z-10 text-sm tabular-nums">
             {{ item.count > 1000 ? (item.count / 1000).toFixed(2) + 'k' : item.count }}
           </p>
         </div>

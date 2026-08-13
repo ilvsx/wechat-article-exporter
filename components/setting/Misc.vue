@@ -10,7 +10,7 @@
           <UCheckbox v-model="preferences.hideDeleted" name="hideDeleted" label="隐藏已删除文章" />
           <UPopover mode="hover" :popper="{ placement: 'top' }">
             <template #panel>
-              <p class="max-w-[300px] p-3 text-sm text-gray-500">
+              <p class="max-w-[300px] p-3 text-sm text-slate-11 dark:text-slate-400">
                 是否在文章下载表格中显示已删除的文章。<br />
                 若勾选该选项，则文章下载表格将过滤掉已经被删除的文章(无论文章内容是否已被下载)。
               </p>
@@ -27,7 +27,7 @@
           />
           <UPopover mode="hover" :popper="{ placement: 'top' }">
             <template #panel>
-              <p class="max-w-[300px] p-3 text-sm text-gray-500">
+              <p class="max-w-[300px] p-3 text-sm text-slate-11 dark:text-slate-400">
                 在抓取文章内容时，若该文章内容已被下载，则会跳过抓取过程。<br />
                 若勾选该选项，则会忽略已缓存内容，强制重新下载最新文章内容。<br />
               </p>
@@ -44,7 +44,7 @@
           />
           <UPopover mode="hover" :popper="{ placement: 'top' }">
             <template #panel>
-              <p class="max-w-[300px] p-3 text-sm text-gray-500">
+              <p class="max-w-[300px] p-3 text-sm text-slate-11 dark:text-slate-400">
                 在抓取阅读量时，会同时下载文章内容。<br />
                 若勾选该选项，则文章内容会同时保存到缓存中(会占用一定的存储空间)。
               </p>
@@ -59,7 +59,7 @@
             <span class="text-sm">公众号同步频率：</span>
             <UPopover mode="hover" :popper="{ placement: 'top' }">
               <template #panel>
-                <p class="max-w-[300px] p-3 text-sm text-gray-500">
+                <p class="max-w-[300px] p-3 text-sm text-slate-11 dark:text-slate-400">
                   在同步公众号文章数据时，程序会自动抓取该公众号的所有文章，直到所有数据同步完成。<br />
                   该选项用于控制抓取频率，比如设置为 5
                   就表示每五秒抓取一次。该数据越小，同步的越快，但是容易被封号。推荐不小于3
@@ -75,7 +75,7 @@
             class="w-52 font-mono"
           >
             <template #trailing>
-              <span class="text-gray-500 dark:text-gray-400 text-xs">秒</span>
+              <span class="text-xs text-slate-11 dark:text-slate-400">秒</span>
             </template>
           </UInput>
         </div>
@@ -87,7 +87,7 @@
           同步时间范围:
           <span class="text-xs text-slate-500">(说明: 只能从当前时间开始往前同步)</span>
         </span>
-        <span class="text-sm text-blue-500 font-medium">实际同步范围: {{ getActualDateRange() }}</span>
+        <span class="text-xs text-slate-11 dark:text-slate-400">实际同步范围: {{ getActualDateRange() }}</span>
       </p>
 
       <div class="flex gap-3">
