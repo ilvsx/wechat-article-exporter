@@ -209,11 +209,13 @@ const columnDefs = ref<ColDef[]>([
 ]);
 
 // 注意，`defu`函数最左边的参数优先级最高
+const gridTheme = useGridTheme();
 const gridOptions: GridOptions = defu(
   {
     animateRows: true,
     columnDefs: columnDefs.value,
     getRowId: (params: GetRowIdParams) => params.data.id,
+    theme: gridTheme.value,
     components: {
       agLoadingOverlay: GridLoading,
       agNoRowsOverlay: GridNoRows,
@@ -225,6 +227,9 @@ const gridOptions: GridOptions = defu(
 );
 
 const gridApi = shallowRef<GridApi | null>(null);
+watch(gridTheme, theme => {
+  gridApi.value?.setGridOption('theme', theme);
+});
 const previewArticleRef = ref<typeof PreviewArticle | null>(null);
 
 function refreshGrid() {

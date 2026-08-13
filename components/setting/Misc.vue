@@ -15,7 +15,7 @@
                 若勾选该选项，则文章下载表格将过滤掉已经被删除的文章(无论文章内容是否已被下载)。
               </p>
             </template>
-            <UIcon color="gray" name="i-heroicons:question-mark-circle-16-solid" class="size-5" />
+            <UIcon color="gray" name="i-lucide:circle-help" class="size-5" />
           </UPopover>
         </div>
 
@@ -32,7 +32,7 @@
                 若勾选该选项，则会忽略已缓存内容，强制重新下载最新文章内容。<br />
               </p>
             </template>
-            <UIcon color="gray" name="i-heroicons:question-mark-circle-16-solid" class="size-5" />
+            <UIcon color="gray" name="i-lucide:circle-help" class="size-5" />
           </UPopover>
         </div>
 
@@ -49,7 +49,7 @@
                 若勾选该选项，则文章内容会同时保存到缓存中(会占用一定的存储空间)。
               </p>
             </template>
-            <UIcon color="gray" name="i-heroicons:question-mark-circle-16-solid" class="size-5" />
+            <UIcon color="gray" name="i-lucide:circle-help" class="size-5" />
           </UPopover>
         </div>
       </div>
@@ -65,7 +65,7 @@
                   就表示每五秒抓取一次。该数据越小，同步的越快，但是容易被封号。推荐不小于3
                 </p>
               </template>
-              <UIcon color="gray" name="i-heroicons:question-mark-circle-16-solid" class="size-5" />
+              <UIcon color="gray" name="i-lucide:circle-help" class="size-5" />
             </UPopover>
           </p>
           <UInput
@@ -99,7 +99,7 @@
           option-attribute="label"
         />
         <UPopover v-if="preferences.syncDateRange === 'point'" :popper="{ placement: 'bottom-start' }">
-          <UButton color="gray" icon="i-heroicons-calendar-days-20-solid" :label="formatDate()" />
+          <UButton color="gray" icon="i-lucide:calendar-days" :label="formatDate()" />
 
           <template #panel="{ close }">
             <BaseDatePicker v-model="preferences.syncDatePoint" is-required @close="close" />

@@ -1,7 +1,7 @@
 <template>
   <UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
     <slot>
-      <UButton color="white" label="导出" trailing-icon="i-heroicons-chevron-down-20-solid" />
+      <UButton color="white" label="导出" trailing-icon="i-lucide:chevron-down" />
     </slot>
   </UDropdown>
 </template>

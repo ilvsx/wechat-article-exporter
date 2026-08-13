@@ -31,7 +31,7 @@ const isLoading = computed(() => props.params.isSyncing && props.params.node.id 
     >
     <UButton
       v-else
-      icon="i-heroicons:arrow-path-rounded-square-20-solid"
+      icon="i-lucide:refresh-cw"
       color="blue"
       size="xs"
       :disabled="isDisabled"

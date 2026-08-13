@@ -4,16 +4,17 @@
       <h1 class="text-base font-semibold text-slate-12 dark:text-slate-100">设置</h1>
     </Teleport>
 
-    <div class="h-full overflow-scroll">
-      <SettingProxy />
-      <div class="flex flex-wrap">
-        <SettingExport />
-        <SettingMisc />
+    <div class="h-full overflow-y-auto p-6">
+      <div class="mx-auto max-w-5xl space-y-6">
+        <SettingProxy />
+        <div class="flex flex-wrap gap-6">
+          <SettingExport />
+          <SettingMisc />
+        </div>
+        <!--      <div>-->
+        <!--        <SettingDisplay />-->
+        <!--      </div>-->
       </div>
-      <!--      <div>-->
-      <!--        <SettingDisplay />-->
-      <!--      </div>-->
-      <div class="h-[30vh]"></div>
     </div>
   </div>
 </template>

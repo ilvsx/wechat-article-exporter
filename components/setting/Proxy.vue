@@ -1,8 +1,8 @@
 <template>
-  <UCard class="mx-4 mt-10">
+  <UCard>
     <template #header>
-      <h3 class="text-2xl font-semibold">代理节点</h3>
-      <p class="text-sm text-slate-10 font-serif">
+      <h3 class="text-base font-semibold text-slate-12 dark:text-slate-100">代理节点</h3>
+      <p class="text-xs text-slate-11">
         若此处留空，则网站将使用
         <ExternalLink :href="docsWebSite + '/get-started/proxy.html'" text="公共代理" /> 进行资源下载。
       </p>
@@ -12,12 +12,13 @@
     </template>
 
     <div class="flex space-x-10">
-      <textarea
-        class="h-[400px] flex-1 p-2 border rounded resize-none font-mono"
+      <UTextarea
+        class="flex-1 font-mono"
+        :rows="16"
         v-model="textareaValue"
         spellcheck="false"
         placeholder="请填写私有部署的代理地址，一行一个"
-      ></textarea>
+      />
       <div class="flex-1 flex-shrink-0">
         <div class="my-5">
           <p>代理节点地址要求：</p>
@@ -34,7 +35,7 @@
           <p><code class="text-rose-500 font-mono">https://wproxy-01.deno.dev</code></p>
           <p><code class="text-rose-500 font-mono">https://wproxy-01.deno.dev/</code></p>
         </div>
-        <UButton type="submit" @click="save" color="black" class="w-20 mt-5 justify-center disabled:bg-slate-10">{{
+        <UButton type="submit" @click="save" color="primary" class="w-20 mt-5 justify-center">{{
           saveBtnText
         }}</UButton>
       </div>

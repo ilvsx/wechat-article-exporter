@@ -4,20 +4,29 @@
       <h1 class="text-base font-semibold text-slate-12 dark:text-slate-100">公共代理</h1>
     </Teleport>
 
-    <div class="flex flex-col h-full divide-y divide-slate-4 dark:divide-slate-800">
+    <div class="flex flex-col h-full gap-4 p-4">
       <!-- header -->
-      <header class="px-4 py-5 sm:px-6">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-2xl font-semibold">统计信息</h2>
-
-          <p class="font-serif font-bold">可用: {{ totalSuccess }}，不可用: {{ totalFailure }}</p>
-        </div>
+      <header
+        class="space-y-3 rounded-lg border border-slate-6 bg-white px-4 py-3 shadow-card dark:border-slate-800 dark:bg-slate-900"
+      >
         <div class="flex justify-between items-center">
-          <p class="text-rose-500 text-sm">
-            警告: 公共代理资源有限，请合理使用。 若需抓取大量数据，请搭建自己的私有代理节点。<br />
-            若发现某ip存在滥用公共代理从而导致官网无法使用，将有可能被封禁。
-          </p>
-          <p class="mt-2 px-3 py-2 text-sm font-semibold text-amber-700 bg-amber-50 border border-amber-300 rounded-md dark:text-amber-300 dark:bg-amber-900/30 dark:border-amber-700">
+          <h2 class="text-base font-semibold text-slate-12 dark:text-slate-100">统计信息</h2>
+
+          <div class="flex items-center gap-1.5">
+            <UBadge color="green" variant="subtle">可用 {{ totalSuccess }}</UBadge>
+            <UBadge color="rose" variant="subtle">不可用 {{ totalFailure }}</UBadge>
+          </div>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <UAlert
+            color="amber"
+            variant="subtle"
+            title="请合理使用公共代理资源"
+            description="若需抓取大量数据，请搭建自己的私有代理节点。若发现某 IP 存在滥用公共代理从而导致官网无法使用，将可能被封禁。"
+          />
+          <p
+            class="flex-shrink-0 px-3 py-2 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-md dark:text-amber-300 dark:bg-amber-900/30 dark:border-amber-700"
+          >
             所有代理额度将在每天早上 8:00 刷新。
           </p>
           <UPopover :popper="{ placement: 'left-start', arrow: true }">
@@ -38,7 +47,7 @@
                 <div>
                   <p class="flex justify-between items-center min-w-64">
                     <span>已被封禁IP:</span>
-                    <span class="text-xs text-gray-500">若存在误伤，请联系开发者</span>
+                    <span class="text-xs text-slate-11">若存在误伤，请联系开发者</span>
                   </p>
                   <ul>
                     <li v-for="ip in blockedIPS" :key="ip">
@@ -53,7 +62,7 @@
       </header>
 
       <!-- 数据展示区 -->
-      <div class="flex-1 px-4 py-5 sm:py-6 overflow-y-scroll">
+      <div class="min-h-0 flex-1 overflow-y-auto rounded-lg border border-slate-6 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
         <div v-if="loading" class="flex justify-center items-center mt-5">
           <Loader :size="28" class="animate-spin text-slate-500" />
         </div>

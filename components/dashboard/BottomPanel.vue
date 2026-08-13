@@ -100,14 +100,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <footer class="flex flex-col space-y-2 pt-3 border-t dark:border-slate-600">
+  <footer class="flex flex-col space-y-2 pt-3 border-t border-slate-4 dark:border-slate-800">
     <div v-if="loginAccount" class="space-y-3">
       <div class="flex items-center space-x-2">
         <img
           v-if="loginAccount.avatar"
           :src="IMAGE_PROXY + loginAccount.avatar"
           alt=""
-          class="rounded-full size-10 ring-1 ring-gray-300"
+          class="rounded-full size-10 ring-1 ring-slate-4 dark:ring-slate-700"
         />
         <UTooltip
           v-if="loginAccount.nickname"
@@ -117,24 +117,28 @@ onUnmounted(() => {
           <template #text>
             <span>{{ loginAccount.nickname }}</span>
           </template>
-          <span class="whitespace-nowrap text-ellipsis overflow-hidden">{{ loginAccount.nickname }}</span>
+          <span class="whitespace-nowrap text-ellipsis overflow-hidden text-sm">{{ loginAccount.nickname }}</span>
         </UTooltip>
 
         <UButton
-          icon="i-heroicons-arrow-left-start-on-rectangle-16-solid"
+          icon="i-lucide:log-out"
+          color="rose"
+          variant="soft"
+          size="sm"
           :loading="logoutBtnLoading"
-          class="bg-slate-10 hover:bg-rose-500 disabled:bg-rose-500"
           @click="logout"
           >退出
         </UButton>
       </div>
-      <div class="text-sm">
-        <span>登录信息过期时间还剩: </span>
-        <span class="font-mono" :class="warning ? 'text-rose-500' : 'text-green-500'">{{ distance }}</span>
+      <div class="flex items-center gap-1.5 text-xs text-slate-11 dark:text-slate-400">
+        <span>登录信息过期时间还剩:</span>
+        <UBadge :color="warning ? 'rose' : 'green'" variant="subtle" size="sm">
+          <span class="tabular-nums">{{ distance }}</span>
+        </UBadge>
       </div>
     </div>
     <div v-else>
-      <UButton color="gray" variant="solid" @click="login">登录公众号</UButton>
+      <UButton color="gray" variant="outline" @click="login">登录公众号</UButton>
     </div>
     <StorageUsage />
   </footer>

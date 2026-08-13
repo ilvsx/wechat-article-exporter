@@ -336,9 +336,11 @@ const columnDefs = ref<ColDef[]>([
 ]);
 
 // 注意，`defu`函数最左边的参数优先级最高
+const gridTheme = useGridTheme();
 const gridOptions: GridOptions = defu(
   {
     getRowId: (params: GetRowIdParams) => `${params.data.fakeid}:${params.data.aid}`,
+    theme: gridTheme.value,
     statusBar: {
       statusPanels: [
         {
@@ -352,6 +354,9 @@ const gridOptions: GridOptions = defu(
 );
 
 const gridApi = shallowRef<GridApi | null>(null);
+watch(gridTheme, theme => {
+  gridApi.value?.setGridOption('theme', theme);
+});
 function onGridReady(params: GridReadyEvent) {
   gridApi.value = params.api;
 

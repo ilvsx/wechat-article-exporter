@@ -109,7 +109,7 @@ const host = window.location.protocol + '//' + window.location.host;
     <div>
       <p class="font-semibold flex items-center mb-2">
         <span class="mr-3">返回示例:</span>
-        <UToggle v-model="open" color="blue" on-icon="i-heroicons:eye" off-icon="i-heroicons:eye-slash" />
+        <UToggle v-model="open" color="blue" on-icon="i-lucide:eye" off-icon="i-lucide:eye-slash" />
       </p>
       <CodeSegment v-if="open" :code="responseSample" lang="json" />
     </div>

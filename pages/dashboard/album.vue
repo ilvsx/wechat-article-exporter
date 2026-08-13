@@ -21,14 +21,22 @@
               size="md"
               placeholder="选择合集"
             />
-            <div>
-              <Loader v-if="switchSortLoading" :size="24" class="animate-spin text-slate-500" />
-              <div v-else class="flex space-x-2 w-fit" @click="toggleReverse">
-                <ArrowUpNarrowWide v-if="isReverse" />
-                <ArrowDownNarrowWide v-else />
-                <span>{{ isReverse ? '正序' : '倒序' }}</span>
-              </div>
-            </div>
+            <UButton
+              v-if="!switchSortLoading"
+              color="gray"
+              variant="ghost"
+              size="sm"
+              @click="toggleReverse"
+            >
+              <UIcon
+                v-if="isReverse"
+                name="i-lucide:arrow-up-narrow-wide"
+                class="size-4"
+              />
+              <UIcon v-else name="i-lucide:arrow-down-narrow-wide" class="size-4" />
+              <span>{{ isReverse ? '正序' : '倒序' }}</span>
+            </UButton>
+            <Loader v-else :size="24" class="animate-spin text-slate-500" />
             <UButton
               color="primary"
               :loading="fetchAllArticlesBtnLoading"
@@ -73,12 +81,12 @@
         <div v-if="albumLoading" class="flex justify-center items-center mt-5">
           <Loader :size="28" class="animate-spin text-slate-500" />
         </div>
-        <div v-else-if="albumBaseInfo" class="relative max-w-2xl mx-auto bg-white">
+        <div v-else-if="albumBaseInfo" class="relative max-w-2xl mx-auto bg-white dark:bg-slate-900">
           <!-- banner -->
           <div class="px-5 py-7 banner">
             <h2 class="text-2xl text-white font-bold"># {{ albumBaseInfo.title }}</h2>
           </div>
-          <div class="sticky top-0 px-5 py-3 bg-white border-b">
+          <div class="sticky top-0 px-5 py-3 bg-white border-b dark:bg-slate-900 dark:border-slate-800">
             <p class="flex items-center space-x-2 mb-2">
               <img class="size-5" :src="albumBaseInfo.brand_icon" alt="" />
               <span>{{ albumBaseInfo.nickname }}</span>
@@ -88,7 +96,7 @@
               <span v-if="albumBaseInfo.description"> · {{ albumBaseInfo.description }}</span>
             </p>
           </div>
-          <div class="bg-white px-4 pb-6">
+          <div class="bg-white px-4 pb-6 dark:bg-slate-900">
             <!-- 文章列表 -->
             <ul class="divide-y">
               <li
@@ -122,7 +130,7 @@
 
 <script setup lang="ts">
 import { vElementVisibility } from '@vueuse/components';
-import { ArrowDownNarrowWide, ArrowUpNarrowWide, Loader } from 'lucide-vue-next';
+import { Loader } from 'lucide-vue-next';
 import { sleep } from '#shared/utils/helpers';
 import { request } from '#shared/utils/request';
 import AccountSelectorForAlbum from '~/components/selector/AccountSelectorForAlbum.vue';

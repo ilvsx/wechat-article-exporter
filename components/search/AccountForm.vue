@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="search">
     <UInput
-      icon="i-heroicons-magnifying-glass-20-solid"
+      icon="i-lucide:search"
       color="white"
       required
       v-model="query"

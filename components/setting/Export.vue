@@ -11,7 +11,7 @@
           <span class="mr-3">导出目录名:</span>
           <span class="inline-block w-8">
             <UPopover mode="hover" :popper="{ placement: 'right' }">
-              <UButton color="white" size="sm" trailing-icon="i-heroicons:variable-16-solid" />
+              <UButton color="white" size="sm" trailing-icon="i-lucide:braces" />
 
               <template #panel>
                 <div class="p-4">

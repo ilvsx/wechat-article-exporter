@@ -18,8 +18,8 @@
     <template #option="{ option: account }">
       <UAvatar :src="account.round_head_img" size="sm" />
       <div>
-        <p class="text-[16px]">{{ account.nickname }}</p>
-        <p class="text-gray-500 text-sm">已加载文章数: {{ account.articles }}</p>
+        <p class="text-sm font-medium">{{ account.nickname }}</p>
+        <p class="text-slate-11 text-xs">已加载文章数: {{ account.articles }}</p>
       </div>
     </template>
     <template #option-empty="{ query }">

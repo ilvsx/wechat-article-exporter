@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ICellRendererParams } from 'ag-grid-community';
-import { Square, SquareCheckBig } from 'lucide-vue-next';
 
 interface Props {
   params: ICellRendererParams;
@@ -12,8 +11,8 @@ defineProps<Props>();
   <p v-if="params.node.group">
     <span>{{ params.value }}</span>
   </p>
-  <p class="flex flex-wrap" v-else>
-    <SquareCheckBig v-if="params.value" class="size-5 text-gray-400" />
-    <Square v-else class="size-5 text-gray-400" />
+  <p v-else class="flex flex-wrap">
+    <UBadge v-if="params.value" color="green" variant="subtle" size="xs">是</UBadge>
+    <UBadge v-else color="gray" variant="subtle" size="xs">否</UBadge>
   </p>
 </template>

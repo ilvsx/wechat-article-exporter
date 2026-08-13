@@ -2,7 +2,7 @@
 defineProps({
   icon: {
     type: String,
-    default: 'i-heroicons-solid:exclamation-triangle',
+    default: 'i-lucide:triangle-alert',
   },
   title: {
     type: String,

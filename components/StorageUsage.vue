@@ -27,7 +27,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <p class="text-sm">
-    本地数据库占用约为 <span class="text-rose-500">{{ usage }}</span>
+  <p class="text-xs text-slate-11 dark:text-slate-400">
+    本地数据库占用约为
+    <span class="tabular-nums font-medium text-slate-12 dark:text-slate-200">{{ usage }}</span>
   </p>
 </template>
