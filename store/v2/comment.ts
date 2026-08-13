@@ -25,3 +25,11 @@ export async function updateCommentCache(comment: CommentAsset): Promise<boolean
 export async function getCommentCache(url: string): Promise<CommentAsset | undefined> {
   return db.comment.get(url);
 }
+
+/**
+ * 批量获取已下载留言的 url 集合(仅主键)
+ * @description 用于文章表格批量标记 commentDownload
+ */
+export async function getCommentUrlSet(): Promise<Set<string>> {
+  return new Set(await db.comment.toCollection().primaryKeys());
+}

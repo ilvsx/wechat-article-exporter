@@ -166,7 +166,7 @@ export default () => {
   // 导出 markdown
   async function export2markdown(urls: string[]) {
     if (urls.length === 0) {
-      toast.success('提示', '请先选择文章');
+      toast.warning('提示', '请先选择文章');
       return;
     }
 
@@ -287,7 +287,7 @@ export default () => {
   function exportFile(
     type: 'excel' | 'json' | 'html' | 'text' | 'markdown' | 'word' | 'pdf',
     urls: string[],
-    contentNotDownloadedCount?: number,
+    contentNotDownloadedCount?: number
   ) {
     if (needsContentFormats.has(type) && contentNotDownloadedCount) {
       toast.warning('提示', `有 ${contentNotDownloadedCount} 篇文章尚未抓取内容，请先抓取内容后再导出`);

@@ -26,3 +26,11 @@ export async function updateHtmlCache(html: HtmlAsset): Promise<boolean> {
 export async function getHtmlCache(url: string): Promise<HtmlAsset | undefined> {
   return db.html.get(url);
 }
+
+/**
+ * 批量获取已下载正文的 url 集合(仅主键,不加载 Blob 数据体)
+ * @description 用于文章表格批量标记 contentDownload,避免逐篇 get() 拉取大文件
+ */
+export async function getHtmlUrlSet(): Promise<Set<string>> {
+  return new Set(await db.html.toCollection().primaryKeys());
+}

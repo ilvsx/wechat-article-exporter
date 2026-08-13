@@ -35,6 +35,11 @@ export const ACCOUNT_TYPE: Record<number, string> = {
 export const CREDENTIAL_LIVE_MINUTES: number = 25;
 
 /**
+ * 文章下载页「全部公众号」筛选选项的哨兵 fakeid
+ */
+export const ALL_ACCOUNTS_FAKEID = 'ALL_ACCOUNTS';
+
+/**
  * Credentials 服务器主机地址
  */
 export const CREDENTIAL_API_HOST = 'http://127.0.0.1:8088';

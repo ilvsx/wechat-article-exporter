@@ -4,7 +4,7 @@
       <NuxtPage />
     </NuxtLayout>
 
-    <UNotifications />
+    <UNotifications position="top-right" />
     <UModals />
   </div>
 </template>
