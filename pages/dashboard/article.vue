@@ -57,21 +57,76 @@ let globalRowData: Article[] = [];
 // 当前账号的全部文章（已按 hideDeleted 过滤），供时间范围筛选使用
 let allArticles: Article[] = [];
 
-// 发布时间范围筛选（unix 秒，为所选日期的 00:00:00）
+// 发布时间范围筛选(日期 unix 秒为 day 精度,时间单独存 HH:mm)
 const dateRangeStart = ref<number | null>(null);
 const dateRangeEnd = ref<number | null>(null);
+const startTime = ref('00:00');
+const endTime = ref('23:59');
+// 结束时间跟随当前时刻(勾选后结束时间为"现在",随时间推进)
+const endFollowNow = ref(false);
 
-function formatDate(value: number | null, fallback: string): string {
-  return value === null ? fallback : dayjs.unix(value).format('YYYY-MM-DD');
+const QUICK_RANGES = [
+  { key: 'today', label: '当天' },
+  { key: '1d', label: '1天' },
+  { key: '7d', label: '7天' },
+  { key: '14d', label: '14天' },
+  { key: '30d', label: '30天' },
+];
+
+function composeTimestamp(dateTs: number, time: string): number {
+  const [h, m] = time.split(':').map(Number);
+  return dayjs
+    .unix(dateTs)
+    .hour(h || 0)
+    .minute(m || 0)
+    .second(0)
+    .unix();
 }
 
-// 按发布时间范围过滤表格数据；结束日期包含当天（+86399 秒到 23:59:59）
+function formatDateTime(dateTs: number | null, time: string, fallback: string): string {
+  return dateTs === null ? fallback : dayjs.unix(composeTimestamp(dateTs, time)).format('MM-DD HH:mm');
+}
+
+// 快捷范围:当天=今日 00:00 起;Nd=当前时刻往前 N 天;结束均跟随当前
+function applyQuickRange(key: string) {
+  const now = dayjs();
+  endFollowNow.value = true;
+  if (key === 'today') {
+    dateRangeStart.value = now.startOf('day').unix();
+    startTime.value = '00:00';
+  } else {
+    const days = Number(key.replace('d', ''));
+    dateRangeStart.value = now.subtract(days, 'days').unix();
+    startTime.value = now.format('HH:mm');
+  }
+  dateRangeEnd.value = null;
+  endTime.value = now.format('HH:mm');
+  applyDateRangeFilter();
+}
+
+// 当前范围匹配的快捷项(用于按钮选中态)
+const activeQuick = computed(() => {
+  if (!endFollowNow.value || dateRangeStart.value === null) return null;
+  const now = Date.now();
+  const s = composeTimestamp(dateRangeStart.value, startTime.value);
+  if (s === dayjs().startOf('day').unix()) return 'today';
+  for (const d of [1, 7, 14, 30]) {
+    if (Math.abs(s - (now - d * 86400)) < 120) return `${d}d`;
+  }
+  return null;
+});
+
+// 按发布时间范围过滤表格数据(精确到分钟)
 function applyDateRangeFilter() {
-  const start = dateRangeStart.value;
-  const end = dateRangeEnd.value;
+  const startTs = dateRangeStart.value !== null ? composeTimestamp(dateRangeStart.value, startTime.value) : null;
+  const endTs = endFollowNow.value
+    ? Math.floor(Date.now() / 1000)
+    : dateRangeEnd.value !== null
+      ? composeTimestamp(dateRangeEnd.value, endTime.value)
+      : null;
   globalRowData = allArticles.filter(article => {
-    if (start !== null && article.update_time < start) return false;
-    if (end !== null && article.update_time > end + 86399) return false;
+    if (startTs !== null && article.update_time < startTs) return false;
+    if (endTs !== null && article.update_time > endTs) return false;
     return true;
   });
   gridApi.value?.setGridOption('rowData', globalRowData);
@@ -80,9 +135,13 @@ function applyDateRangeFilter() {
 function clearDateRange() {
   dateRangeStart.value = null;
   dateRangeEnd.value = null;
+  startTime.value = '00:00';
+  endTime.value = '23:59';
+  endFollowNow.value = false;
+  applyDateRangeFilter();
 }
 
-watch([dateRangeStart, dateRangeEnd], () => {
+watch([dateRangeStart, dateRangeEnd, startTime, endTime, endFollowNow], () => {
   applyDateRangeFilter();
 });
 
@@ -582,22 +641,54 @@ function copyWechatLink() {
             <AccountSelectorForArticle v-model="selectedAccount" class="w-80" />
           </div>
           <!-- 发布时间范围筛选 -->
-          <div class="flex items-center space-x-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- 快捷范围 -->
+            <div class="flex items-center gap-0.5 rounded-lg bg-slate-3 p-0.5 dark:bg-slate-800">
+              <UButton
+                v-for="r in QUICK_RANGES"
+                :key="r.key"
+                size="xs"
+                :variant="activeQuick === r.key ? 'solid' : 'ghost'"
+                :color="activeQuick === r.key ? 'primary' : 'gray'"
+                @click="applyQuickRange(r.key)"
+                >{{ r.label }}</UButton
+              >
+            </div>
+            <!-- 开始时间 -->
             <UPopover :popper="{ placement: 'bottom-start' }">
-              <UButton color="gray" icon="i-lucide:calendar-days" :label="formatDate(dateRangeStart, '开始日期')" />
+              <UButton
+                color="gray"
+                size="sm"
+                icon="i-lucide:calendar-clock"
+                :label="formatDateTime(dateRangeStart, startTime, '开始时间')"
+              />
               <template #panel="{ close }">
-                <BaseDatePicker v-model="dateRangeStart" @close="close" />
+                <div class="flex flex-col gap-3 p-3">
+                  <BaseDatePicker v-model="dateRangeStart" @close="close" />
+                  <UInput v-model="startTime" type="time" size="sm" class="w-36" />
+                </div>
               </template>
             </UPopover>
             <span class="select-none text-slate-9">–</span>
+            <!-- 结束时间 -->
             <UPopover :popper="{ placement: 'bottom-start' }">
-              <UButton color="gray" icon="i-lucide:calendar-days" :label="formatDate(dateRangeEnd, '结束日期')" />
+              <UButton
+                color="gray"
+                size="sm"
+                icon="i-lucide:calendar-clock"
+                :label="endFollowNow ? '跟随当前时刻' : formatDateTime(dateRangeEnd, endTime, '结束时间')"
+                :disabled="endFollowNow"
+              />
               <template #panel="{ close }">
-                <BaseDatePicker v-model="dateRangeEnd" @close="close" />
+                <div class="flex flex-col gap-3 p-3">
+                  <BaseDatePicker v-model="dateRangeEnd" :disabled="endFollowNow" @close="close" />
+                  <UInput v-model="endTime" type="time" size="sm" class="w-36" :disabled="endFollowNow" />
+                </div>
               </template>
             </UPopover>
+            <UCheckbox v-model="endFollowNow" size="sm" label="结束跟随当前" />
             <UButton
-              v-if="dateRangeStart !== null || dateRangeEnd !== null"
+              v-if="dateRangeStart !== null || dateRangeEnd !== null || endFollowNow"
               size="xs"
               color="gray"
               variant="ghost"

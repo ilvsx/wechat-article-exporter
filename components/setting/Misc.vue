@@ -1,7 +1,7 @@
 <template>
-  <UCard class="mx-4 mt-10 flex-1">
+  <UCard>
     <template #header>
-      <h3 class="text-2xl font-semibold">其他</h3>
+      <h3 class="text-base font-semibold text-slate-12 dark:text-slate-100">其他</h3>
     </template>
 
     <div class="flex">

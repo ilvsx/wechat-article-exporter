@@ -22,5 +22,36 @@ export default defineAppConfig({
       shadow: 'shadow-sm',
       divide: 'divide-y divide-slate-4 dark:divide-slate-800',
     },
+    // 下拉菜单丝滑过渡(scale + opacity)
+    selectMenu: {
+      transition: {
+        enterActiveClass: 'transition duration-150 ease-out',
+        enterFromClass: 'opacity-0 scale-95',
+        enterToClass: 'opacity-100 scale-100',
+        leaveActiveClass: 'transition duration-100 ease-in',
+        leaveFromClass: 'opacity-100 scale-100',
+        leaveToClass: 'opacity-0 scale-95',
+      },
+    },
+    inputMenu: {
+      transition: {
+        enterActiveClass: 'transition duration-150 ease-out',
+        enterFromClass: 'opacity-0 scale-95',
+        enterToClass: 'opacity-100 scale-100',
+        leaveActiveClass: 'transition duration-100 ease-in',
+        leaveFromClass: 'opacity-100 scale-100',
+        leaveToClass: 'opacity-0 scale-95',
+      },
+    },
+    dropdown: {
+      transition: {
+        enterActiveClass: 'transition duration-150 ease-out',
+        enterFromClass: 'opacity-0 scale-95',
+        enterToClass: 'opacity-100 scale-100',
+        leaveActiveClass: 'transition duration-100 ease-in',
+        leaveFromClass: 'opacity-100 scale-100',
+        leaveToClass: 'opacity-0 scale-95',
+      },
+    },
   },
 });

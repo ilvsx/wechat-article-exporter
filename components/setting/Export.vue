@@ -1,5 +1,5 @@
 <template>
-  <UCard class="mx-4 mt-10 flex-1">
+  <UCard>
     <template #header>
       <h3 class="text-base font-semibold text-slate-12 dark:text-slate-100">导出选项</h3>
       <p class="text-xs text-slate-11">配置文章的导出选项</p>
@@ -28,9 +28,27 @@
                         <th class="w-32">含义</th>
                       </tr>
                       <tr v-for="(item, idx) in variables" :key="idx">
-                        <td class="text-center">{{ item[0].name }}</td>
+                        <td class="text-center">
+                          <UButton
+                            v-if="item[0].name"
+                            size="xs"
+                            color="primary"
+                            variant="link"
+                            @click="insertVariable(item[0].name)"
+                            >{{ item[0].name }}</UButton
+                          >
+                        </td>
                         <td class="text-center">{{ item[0].description }}</td>
-                        <td class="text-center">{{ item[1].name }}</td>
+                        <td class="text-center">
+                          <UButton
+                            v-if="item[1].name"
+                            size="xs"
+                            color="primary"
+                            variant="link"
+                            @click="insertVariable(item[1].name)"
+                            >{{ item[1].name }}</UButton
+                          >
+                        </td>
                         <td class="text-center">{{ item[1].description }}</td>
                       </tr>
                     </tbody>
@@ -42,8 +60,9 @@
         </p>
         <p class="text-sm mb-2 text-slate-11">影响 <span class="font-mono">html/txt/markdown/word/pdf</span> 的导出</p>
         <UInput
+          ref="dirnameInputRef"
           placeholder="目录名格式"
-          class="w-[600px] font-mono"
+          class="w-full max-w-xl font-mono"
           name="dirname"
           v-model="preferences.exportConfig.dirname"
         />
@@ -111,6 +130,23 @@ const sampleData: Record<string, string> = {
   HH: '10',
   mm: '30',
 };
+
+const dirnameInputRef = ref<InstanceType<typeof UInput> | null>(null);
+
+// 在光标处插入 ${变量名}
+function insertVariable(name: string) {
+  const input = dirnameInputRef.value?.$el?.querySelector('input') as HTMLInputElement | null;
+  const current = preferences.value.exportConfig.dirname || '';
+  const pos = input ? (input.selectionStart ?? current.length) : current.length;
+  const token = `\${${name}}`;
+  preferences.value.exportConfig.dirname = current.slice(0, pos) + token + current.slice(pos);
+  nextTick(() => {
+    if (input) {
+      input.focus();
+      input.setSelectionRange(pos + token.length, pos + token.length);
+    }
+  });
+}
 
 const dirnamePreview = computed(() => {
   let result = preferences.value.exportConfig.dirname || '';

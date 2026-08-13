@@ -8,10 +8,8 @@
       <div class="mx-auto max-w-5xl space-y-6">
         <SettingBackup />
         <SettingProxy />
-        <div class="flex flex-wrap gap-6">
-          <SettingExport />
-          <SettingMisc />
-        </div>
+        <SettingExport />
+        <SettingMisc />
         <!--      <div>-->
         <!--        <SettingDisplay />-->
         <!--      </div>-->

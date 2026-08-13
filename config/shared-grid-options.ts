@@ -64,7 +64,7 @@ export const sharedGridOptions: GridOptions = {
   },
   selectionColumnDef: {
     sortable: true,
-    width: 52,
+    width: 40,
     pinned: 'left',
   },
   rowSelection: {
