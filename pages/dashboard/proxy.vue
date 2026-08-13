@@ -1,10 +1,10 @@
 <template>
   <div class="h-full">
     <Teleport defer to="#title">
-      <h1 class="text-[28px] leading-[34px] text-slate-12 dark:text-slate-50 font-bold">公共代理</h1>
+      <h1 class="text-base font-semibold text-slate-12 dark:text-slate-100">公共代理</h1>
     </Teleport>
 
-    <div class="flex flex-col h-full divide-y divide-gray-200">
+    <div class="flex flex-col h-full divide-y divide-slate-4 dark:divide-slate-800">
       <!-- header -->
       <header class="px-4 py-5 sm:px-6">
         <div class="flex justify-between items-center mb-3">
@@ -109,7 +109,7 @@ onMounted(async () => {
       currentIP.value = data.ip;
     }),
     request<{ ips: string[] } | string[]>('/api/web/worker/blocked-ip-list').then(data => {
-      blockedIPS.value = Array.isArray(data) ? data : (data.ips || []);
+      blockedIPS.value = Array.isArray(data) ? data : data.ips || [];
     }),
   ]);
 });

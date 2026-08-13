@@ -188,6 +188,7 @@ const columnDefs = ref<ColDef[]>([
   },
   {
     headerName: '操作',
+    headerClass: 'flex justify-center',
     colId: 'single-action',
     field: 'link',
     sortable: false,
@@ -585,15 +586,17 @@ async function removeRows() {
 <template>
   <div class="h-full">
     <Teleport defer to="#title">
-      <h1 class="text-[28px] leading-[34px] text-slate-12 dark:text-slate-50 font-bold">单篇文章下载</h1>
+      <h1 class="text-base font-semibold text-slate-12 dark:text-slate-100">单篇文章下载</h1>
     </Teleport>
 
-    <div class="flex flex-col h-full divide-y divide-gray-200">
+    <div class="flex flex-col h-full gap-4 p-4">
       <!-- 顶部操作区 -->
-      <header class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between px-3 py-3">
+      <header
+        class="flex flex-col gap-3 rounded-lg border border-slate-6 bg-white px-4 py-3 shadow-card dark:border-slate-800 dark:bg-slate-900 lg:flex-row lg:items-center lg:justify-between"
+      >
         <div class="flex flex-1 gap-3">
           <UInput v-model="inputUrl" placeholder="请输入公众号文章链接" class="flex-1" @keyup.enter="addArticle" />
-          <UButton color="blue" @click="addArticle">添加</UButton>
+          <UButton color="primary" @click="addArticle">添加</UButton>
         </div>
         <div class="flex items-center gap-3">
           <ButtonGroup
@@ -611,10 +614,9 @@ async function removeRows() {
             <UButton
               :loading="downloadBtnLoading"
               :disabled="selectedArticleUrls.length === 0"
-              color="white"
-              class="font-mono"
+              color="primary"
               :label="downloadBtnLoading ? `抓取中 ${downloadCompletedCount}/${downloadTotalCount}` : '抓取'"
-              trailing-icon="i-heroicons-chevron-down-20-solid"
+              trailing-icon="i-lucide:chevron-down"
             />
           </ButtonGroup>
 
@@ -639,10 +641,9 @@ async function removeRows() {
             <UButton
               :loading="exportBtnLoading"
               :disabled="selectedArticleUrls.length === 0"
-              color="white"
-              class="font-mono"
+              color="gray"
               :label="exportBtnLoading ? `${exportPhase} ${exportCompletedCount}/${exportTotalCount}` : '导出'"
-              trailing-icon="i-heroicons-chevron-down-20-solid"
+              trailing-icon="i-lucide:chevron-down"
             />
           </ButtonGroup>
 
@@ -652,15 +653,17 @@ async function removeRows() {
         </div>
       </header>
 
-      <ag-grid-vue
-        style="width: 100%; height: 100%"
-        :rowData="globalRowData"
-        :columnDefs="columnDefs"
-        :gridOptions="gridOptions"
-        @grid-ready="onGridReady"
-        @filter-changed="onFilterChanged"
-        @selection-changed="onSelectionChanged"
-      />
+      <div class="min-h-0 flex-1 overflow-hidden rounded-lg shadow-card">
+        <ag-grid-vue
+          style="width: 100%; height: 100%"
+          :rowData="globalRowData"
+          :columnDefs="columnDefs"
+          :gridOptions="gridOptions"
+          @grid-ready="onGridReady"
+          @filter-changed="onFilterChanged"
+          @selection-changed="onSelectionChanged"
+        />
+      </div>
     </div>
 
     <PreviewArticle ref="previewArticleRef" />

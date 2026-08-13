@@ -321,6 +321,7 @@ const columnDefs = ref<ColDef[]>([
   {
     colId: 'action',
     headerName: '操作',
+    headerClass: 'flex justify-center',
     field: 'fakeid',
     sortable: false,
     filter: false,
@@ -506,22 +507,22 @@ const { getActualDateRange } = useSyncDeadline();
 <template>
   <div class="h-full">
     <Teleport defer to="#title">
-      <h1 class="text-[28px] leading-[34px] text-slate-12 dark:text-slate-50 font-bold">公众号管理</h1>
+      <h1 class="text-base font-semibold text-slate-12 dark:text-slate-100">公众号管理</h1>
     </Teleport>
 
-    <div class="flex flex-col h-full divide-y divide-gray-200">
+    <div class="flex flex-col h-full gap-4 p-4">
       <!-- 顶部操作区 -->
-      <header class="flex items-stretch gap-3 px-3 py-3">
-        <UButton icon="i-lucide:user-plus" color="blue" :disabled="isDeleting || addBtnLoading" @click="addAccount">
+      <header class="flex items-center gap-2 rounded-lg border border-slate-6 bg-white px-4 py-3 shadow-card dark:border-slate-800 dark:bg-slate-900">
+        <UButton icon="i-lucide:user-plus" color="primary" :disabled="isDeleting || addBtnLoading" @click="addAccount">
           {{ addBtnLoading ? '添加中...' : '添加' }}
         </UButton>
-        <UButton icon="i-lucide:arrow-down-to-line" color="blue" :loading="importBtnLoading" @click="importAccount">
+        <UButton icon="i-lucide:arrow-down-to-line" color="gray" :loading="importBtnLoading" @click="importAccount">
           批量导入
           <input ref="fileRef" type="file" accept=".json" class="hidden" @change="handleFileChange" />
         </UButton>
         <UButton
           icon="i-lucide:arrow-up-from-line"
-          color="blue"
+          color="gray"
           :loading="exportBtnLoading"
           :disabled="!hasSelectedRows"
           @click="exportAccount"
@@ -530,40 +531,42 @@ const { getActualDateRange } = useSyncDeadline();
         </UButton>
         <UButton
           color="rose"
+          variant="soft"
           icon="i-lucide:user-minus"
-          class="disabled:opacity-35"
           :loading="isDeleting"
           :disabled="!hasSelectedRows"
           @click="deleteSelectedAccounts"
           >删除</UButton
         >
         <UButton
-          color="black"
-          icon="i-heroicons:arrow-path-rounded-square-20-solid"
-          class="disabled:opacity-35"
+          color="gray"
+          icon="i-lucide:refresh-cw"
           :loading="isSyncing"
           :disabled="isDeleting || !hasSelectedRows"
           @click="loadSelectedAccountArticle"
           >同步</UButton
         >
-        <div class="hidden xl:flex flex-1 justify-end">
-          <span class="self-end text-sm text-blue-500 font-medium">同步范围: {{ getActualDateRange() }}</span>
+        <div class="ml-auto hidden items-center gap-1.5 text-xs text-slate-11 dark:text-slate-400 xl:flex">
+          <UIcon name="i-lucide:calendar-range" class="size-3.5" />
+          <span class="tabular-nums">同步范围: {{ getActualDateRange() }}</span>
         </div>
       </header>
 
       <!-- 数据表格 -->
-      <ag-grid-vue
-        style="width: 100%; height: 100%"
-        :rowData="globalRowData"
-        :columnDefs="columnDefs"
-        :gridOptions="gridOptions"
-        @grid-ready="onGridReady"
-        @selection-changed="onSelectionChanged"
-        @column-moved="onColumnStateChange"
-        @column-visible="onColumnStateChange"
-        @column-pinned="onColumnStateChange"
-        @column-resized="onColumnStateChange"
-      ></ag-grid-vue>
+      <div class="min-h-0 flex-1 overflow-hidden rounded-lg shadow-card">
+        <ag-grid-vue
+          style="width: 100%; height: 100%"
+          :rowData="globalRowData"
+          :columnDefs="columnDefs"
+          :gridOptions="gridOptions"
+          @grid-ready="onGridReady"
+          @selection-changed="onSelectionChanged"
+          @column-moved="onColumnStateChange"
+          @column-visible="onColumnStateChange"
+          @column-pinned="onColumnStateChange"
+          @column-resized="onColumnStateChange"
+        ></ag-grid-vue>
+      </div>
     </div>
 
     <!-- 添加公众号弹框 -->

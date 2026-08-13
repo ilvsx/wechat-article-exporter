@@ -1,38 +1,62 @@
-:root {
-    /*--ag-selected-row-background-color: transparent;*/
-
-    .ag-header-cell-label {
-        justify-content: center;
-    }
-
-    .deleted-row {
-        background-color: #fef9c3;
-    }
-
-    /* 侧边栏工具面板标签 */
-    .ag-side-bar .ag-side-button-label {
-        letter-spacing: 0.2em;
-        font-size: 15px;
-        font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", system-ui, sans-serif;
-        /*font-weight: bold;*/
-    }
-}
-
+/* ============ 基础 ============ */
 body {
     overscroll-behavior: none; /* 阻止滚动到页面边缘的效果 */
-}
-::selection {
-    background-color: yellow;
-    color: black;
-}
-.highlight {
-    color: red;
+    -webkit-font-smoothing: antialiased;
 }
 
+/* 选中文本：蓝底白字（替代默认黄底黑字） */
+::selection {
+    background-color: #dbeafe;
+    color: inherit;
+}
+.dark ::selection {
+    background-color: rgb(37 99 235 / 0.35);
+    color: inherit;
+}
+
+/* ============ 全局细滚动条 ============ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgb(0 0 0 / 0.16);
+    border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(0 0 0 / 0.26);
+}
+.dark ::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / 0.14);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 255 255 / 0.24);
+}
+
+/* 无滚动条工具类（弹层内部列表等） */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
 .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+}
+
+/* ============ AG Grid 细节 ============ */
+/* 已删除文章行：amber 底（亮/暗双变体） */
+.deleted-row {
+    background-color: #fffbeb;
+}
+.dark .deleted-row {
+    background-color: rgb(245 158 11 / 0.12);
+}
+
+/* 侧边栏工具面板标签 */
+.ag-side-bar .ag-side-button-label {
+    letter-spacing: 0.05em;
+    font-size: 13px;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", system-ui, sans-serif;
 }

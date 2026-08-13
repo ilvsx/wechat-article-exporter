@@ -185,6 +185,7 @@ const columnDefs = ref<ColDef[]>([
   },
   {
     headerName: '内容已下载',
+    headerClass: 'flex justify-center',
     field: 'contentDownload',
     cellDataType: 'boolean',
     filter: 'agSetColumnFilter',
@@ -195,6 +196,7 @@ const columnDefs = ref<ColDef[]>([
   {
     field: 'commentDownload',
     headerName: '留言已下载',
+    headerClass: 'flex justify-center',
     cellDataType: 'boolean',
     filter: 'agSetColumnFilter',
     filterParams: createBooleanColumnFilterParams('已下载', '未下载'),
@@ -314,6 +316,7 @@ const columnDefs = ref<ColDef[]>([
   },
   {
     headerName: '操作',
+    headerClass: 'flex justify-center',
     field: 'link',
     sortable: false,
     filter: false,
@@ -558,35 +561,29 @@ function copyWechatLink() {
 <template>
   <div class="h-full">
     <Teleport defer to="#title">
-      <h1 class="text-[28px] leading-[34px] text-slate-12 dark:text-slate-50 font-bold">文章下载</h1>
+      <h1 class="text-base font-semibold text-slate-12 dark:text-slate-100">文章下载</h1>
     </Teleport>
 
-    <div class="flex flex-col h-full divide-y divide-gray-200">
+    <div class="flex flex-col h-full gap-4 p-4">
       <!-- 顶部筛选与操作区 -->
-      <header class="flex flex-col items-start lg:flex-row lg:items-center lg:justify-between gap-2 px-3 py-2">
-        <div class="flex flex-col xl:flex-row gap-2">
+      <header
+        class="flex flex-col items-start gap-3 rounded-lg border border-slate-6 bg-white px-4 py-3 shadow-card dark:border-slate-800 dark:bg-slate-900 lg:flex-row lg:items-center lg:justify-between"
+      >
+        <div class="flex flex-col gap-2 xl:flex-row">
           <div class="flex space-x-3">
             <AccountSelectorForArticle v-model="selectedAccount" class="w-80" />
           </div>
           <!-- 发布时间范围筛选 -->
           <div class="flex items-center space-x-2">
             <UPopover :popper="{ placement: 'bottom-start' }">
-              <UButton
-                color="gray"
-                icon="i-heroicons-calendar-days-20-solid"
-                :label="formatDate(dateRangeStart, '开始日期')"
-              />
+              <UButton color="gray" icon="i-lucide:calendar-days" :label="formatDate(dateRangeStart, '开始日期')" />
               <template #panel="{ close }">
                 <BaseDatePicker v-model="dateRangeStart" @close="close" />
               </template>
             </UPopover>
-            <span class="text-gray-400 select-none">~</span>
+            <span class="select-none text-slate-9">–</span>
             <UPopover :popper="{ placement: 'bottom-start' }">
-              <UButton
-                color="gray"
-                icon="i-heroicons-calendar-days-20-solid"
-                :label="formatDate(dateRangeEnd, '结束日期')"
-              />
+              <UButton color="gray" icon="i-lucide:calendar-days" :label="formatDate(dateRangeEnd, '结束日期')" />
               <template #panel="{ close }">
                 <BaseDatePicker v-model="dateRangeEnd" @close="close" />
               </template>
@@ -596,13 +593,13 @@ function copyWechatLink() {
               size="xs"
               color="gray"
               variant="ghost"
-              icon="i-heroicons-x-mark-20-solid"
+              icon="i-lucide:x"
               @click="clearDateRange"
             />
           </div>
         </div>
         <div class="flex items-center space-x-2">
-          <UButton v-if="downloadBtnLoading" color="black" @click="stopDownload">停止</UButton>
+          <UButton v-if="downloadBtnLoading" color="rose" variant="soft" @click="stopDownload">停止</UButton>
           <ButtonGroup
             :items="[
               { label: '文章内容', event: 'download-article-html' },
@@ -616,10 +613,9 @@ function copyWechatLink() {
             <UButton
               :loading="downloadBtnLoading"
               :disabled="!selectedAccount"
-              color="white"
-              class="font-mono"
+              color="primary"
               :label="downloadBtnLoading ? `抓取中 ${downloadCompletedCount}/${downloadTotalCount}` : '抓取'"
-              trailing-icon="i-heroicons-chevron-down-20-solid"
+              trailing-icon="i-lucide:chevron-down"
             />
           </ButtonGroup>
 
@@ -644,38 +640,39 @@ function copyWechatLink() {
             <UButton
               :loading="exportBtnLoading"
               :disabled="!selectedAccount"
-              color="white"
-              class="font-mono"
+              color="gray"
               :label="exportBtnLoading ? `${exportPhase} ${exportCompletedCount}/${exportTotalCount}` : '导出'"
-              trailing-icon="i-heroicons-chevron-down-20-solid"
+              trailing-icon="i-lucide:chevron-down"
             />
           </ButtonGroup>
 
           <UButton
             :disabled="!selectedAccount"
-            :icon="copied ? 'i-lucide:check' : 'i-heroicons-link-16-solid'"
+            :icon="copied ? 'i-lucide:check' : 'i-lucide:link'"
             label="复制公众号链接"
-            :color="copied ? 'green' : 'blue'"
+            color="gray"
             @click="copyWechatLink"
           />
           <UButton v-if="isDev" @click="debug">调试</UButton>
         </div>
       </header>
 
-      <ag-grid-vue
-        style="width: 100%; height: 100%"
-        :loading="loading"
-        :rowData="globalRowData"
-        :columnDefs="columnDefs"
-        :gridOptions="gridOptions"
-        @grid-ready="onGridReady"
-        @filter-changed="onFilterChanged"
-        @column-moved="onColumnStateChange"
-        @column-visible="onColumnStateChange"
-        @column-pinned="onColumnStateChange"
-        @column-resized="onColumnStateChange"
-        @selection-changed="onSelectionChanged"
-      ></ag-grid-vue>
+      <div class="min-h-0 flex-1 overflow-hidden rounded-lg shadow-card">
+        <ag-grid-vue
+          style="width: 100%; height: 100%"
+          :loading="loading"
+          :rowData="globalRowData"
+          :columnDefs="columnDefs"
+          :gridOptions="gridOptions"
+          @grid-ready="onGridReady"
+          @filter-changed="onFilterChanged"
+          @column-moved="onColumnStateChange"
+          @column-visible="onColumnStateChange"
+          @column-pinned="onColumnStateChange"
+          @column-resized="onColumnStateChange"
+          @selection-changed="onSelectionChanged"
+        ></ag-grid-vue>
+      </div>
     </div>
 
     <PreviewArticle ref="previewArticleRef" />

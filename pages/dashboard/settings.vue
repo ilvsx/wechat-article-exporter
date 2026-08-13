@@ -1,7 +1,7 @@
 <template>
   <div class="h-full">
     <Teleport defer to="#title">
-      <h1 class="text-[28px] leading-[34px] text-slate-12 dark:text-slate-50 font-bold">设置</h1>
+      <h1 class="text-base font-semibold text-slate-12 dark:text-slate-100">设置</h1>
     </Teleport>
 
     <div class="h-full overflow-scroll">

@@ -6,11 +6,11 @@ import { websiteName } from '~/config';
 
 <template>
   <aside
-    class="hidden md:flex flex-col h-full w-[250px] flex-shrink-0 justify-between border-r border-slate-4 dark:border-slate-700 bg-slate-1 px-4 pb-6"
+    class="hidden md:flex flex-col h-full w-[250px] flex-shrink-0 justify-between border-r border-slate-6 bg-slate-1 px-4 pb-6 dark:border-slate-800 dark:bg-slate-900"
   >
     <!-- 网站标题 & Logo -->
-    <div class="flex items-center h-[60px]">
-      <NuxtLink to="/" class="px-2 font-bold text-xl">{{ websiteName }}</NuxtLink>
+    <div class="flex items-center h-14">
+      <NuxtLink to="/" class="px-2 font-semibold text-[15px]">{{ websiteName }}</NuxtLink>
     </div>
 
     <!-- 导航菜单 -->

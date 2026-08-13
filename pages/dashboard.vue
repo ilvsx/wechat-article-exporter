@@ -10,14 +10,14 @@
       <div class="flex flex-col flex-1 overflow-hidden h-full">
         <!-- 顶部操作栏 -->
         <div
-          class="flex h-[60px] flex-shrink-0 items-center justify-between border-b border-slate-6 dark:border-slate-600 px-6"
+          class="flex h-14 flex-shrink-0 items-center justify-between border-b border-slate-6 bg-white px-6 dark:border-slate-800 dark:bg-slate-900"
         >
           <div id="title"></div>
           <GlobalActions />
         </div>
 
         <!-- 页面容器 -->
-        <div class="flex-1 overflow-hidden">
+        <div class="flex-1 overflow-hidden bg-slate-2 dark:bg-slate-950">
           <NuxtPage />
         </div>
       </div>

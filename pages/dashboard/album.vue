@@ -1,12 +1,14 @@
 <template>
   <div class="h-full">
     <Teleport defer to="#title">
-      <h1 class="text-[28px] leading-[34px] text-slate-12 dark:text-slate-50 font-bold">合集下载</h1>
+      <h1 class="text-base font-semibold text-slate-12 dark:text-slate-100">合集下载</h1>
     </Teleport>
 
-    <div class="flex flex-col h-full divide-y divide-gray-200">
+    <div class="flex flex-col h-full gap-4 p-4">
       <!-- 顶部筛选与操作区 -->
-      <header class="flex flex-col items-start xl:flex-row xl:items-center gap-2 xl:justify-between px-3 py-2">
+      <header
+        class="flex flex-col items-start gap-3 rounded-lg border border-slate-6 bg-white px-4 py-3 shadow-card dark:border-slate-800 dark:bg-slate-900 xl:flex-row xl:items-center xl:justify-between"
+      >
         <div class="flex gap-2">
           <div class="flex items-center space-x-3">
             <AccountSelectorForAlbum v-model="selectedAccount" class="w-80" />
@@ -28,9 +30,7 @@
               </div>
             </div>
             <UButton
-              color="black"
-              variant="solid"
-              class="disabled:bg-slate-4 disabled:text-slate-12"
+              color="primary"
               :loading="fetchAllArticlesBtnLoading"
               :disabled="!selectedAccount || !selectedAlbum || albumArticles.length === 0 || noMoreData"
               @click="fetchAllArticles"
@@ -48,10 +48,7 @@
             >跳转到原始链接</UButton
           >
           <UButton
-            color="black"
-            variant="solid"
-            size="md"
-            class="disabled:bg-slate-4 disabled:text-slate-12"
+            color="primary"
             :disabled="!selectedAccount || !selectedAlbum || albumArticles.length === 0 || batchDownloadLoading"
             @click="doBatchDownload"
           >
@@ -69,7 +66,10 @@
       </header>
 
       <!-- 合集文章列表 -->
-      <main class="flex-1 overflow-y-scroll bg-[#ededed]" v-if="selectedAccount && selectedAlbum">
+      <main
+        class="min-h-0 flex-1 overflow-y-auto rounded-lg bg-white shadow-card dark:bg-slate-900"
+        v-if="selectedAccount && selectedAlbum"
+      >
         <div v-if="albumLoading" class="flex justify-center items-center mt-5">
           <Loader :size="28" class="animate-spin text-slate-500" />
         </div>

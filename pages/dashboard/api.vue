@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-full">
     <Teleport defer to="#title">
-      <h1 class="text-[28px] leading-[34px] text-slate-12 dark:text-slate-50 font-bold">API</h1>
+      <h1 class="text-base font-semibold text-slate-12 dark:text-slate-100">API</h1>
     </Teleport>
     <div class="flex-1 p-6 overflow-scroll space-y-20">
       <ApiSummary />
