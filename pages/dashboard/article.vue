@@ -400,6 +400,7 @@ const columnDefs = ref<ColDef[]>([
   {
     headerName: '操作',
     headerClass: 'flex justify-center',
+    colId: 'action',
     field: 'link',
     sortable: false,
     filter: false,
@@ -411,8 +412,13 @@ const columnDefs = ref<ColDef[]>([
       onGotoLink: (params: ICellRendererParams) => {
         window.open(params.value, '_blank');
       },
+      onCopyLink: (params: ICellRendererParams) => {
+        navigator.clipboard.writeText(params.value).catch(e => {
+          toast.error('复制失败', e instanceof Error ? e.message : String(e));
+        });
+      },
     },
-    maxWidth: 100,
+    maxWidth: 150,
     pinned: 'right',
     cellClass: 'flex justify-center items-center',
   },
@@ -820,18 +826,6 @@ async function debug() {
     console.log(result);
   }
 }
-
-const copied = ref(false);
-const canCopyLink = computed(() => !isAllScope.value && !!selectedAccount.value);
-function copyWechatLink() {
-  const link = `https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=${selectedAccount.value?.fakeid}#wechat_redirect`;
-  navigator.clipboard.writeText(link);
-
-  copied.value = true;
-  setTimeout(() => {
-    copied.value = false;
-  }, 1000);
-}
 </script>
 
 <template>
@@ -936,17 +930,6 @@ function copyWechatLink() {
             @click="openExportDialog"
           />
 
-          <UTooltip text="选择单个公众号后可用" :disabled="canCopyLink">
-            <span class="inline-flex">
-              <UButton
-                :disabled="!canCopyLink"
-                :icon="copied ? 'i-lucide:check' : 'i-lucide:link'"
-                label="复制公众号链接"
-                color="gray"
-                @click="copyWechatLink"
-              />
-            </span>
-          </UTooltip>
           <UButton v-if="isDev" @click="debug">调试</UButton>
         </div>
       </header>

@@ -5,9 +5,13 @@ interface Props {
   params: ICellRendererParams & {
     onGotoLink?: (params: ICellRendererParams) => void;
     onPreview?: (params: ICellRendererParams) => void;
+    onCopyLink?: (params: ICellRendererParams) => void;
   };
 }
 const props = defineProps<Props>();
+
+const copied = ref(false);
+let copyTimer: ReturnType<typeof setTimeout> | null = null;
 
 function gotoLink() {
   props.params.onGotoLink && props.params.onGotoLink(props.params);
@@ -15,10 +19,27 @@ function gotoLink() {
 function preview() {
   props.params.onPreview && props.params.onPreview(props.params);
 }
+function copyLink() {
+  props.params.onCopyLink && props.params.onCopyLink(props.params);
+  copied.value = true;
+  if (copyTimer) clearTimeout(copyTimer);
+  copyTimer = setTimeout(() => {
+    copied.value = false;
+  }, 1200);
+}
 </script>
 
 <template>
   <div class="flex items-center justify-center">
+    <UTooltip text="复制文章链接" :popper="{ placement: 'top' }">
+      <UButton
+        :icon="copied ? 'i-lucide:check' : 'i-lucide:link'"
+        color="blue"
+        square
+        variant="ghost"
+        @click="copyLink"
+      />
+    </UTooltip>
     <UTooltip text="访问原文" :popper="{ placement: 'top' }">
       <UButton icon="i-lucide:external-link" color="blue" square variant="ghost" @click="gotoLink" />
     </UTooltip>

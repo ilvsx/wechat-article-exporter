@@ -349,12 +349,18 @@ const columnDefs = ref<ColDef[]>([
         syncingRowId.value = null;
         isSyncing.value = false;
       },
+      onCopyLink: (params: ICellRendererParams) => {
+        const link = `https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=${params.data.fakeid}#wechat_redirect`;
+        navigator.clipboard.writeText(link).catch(e => {
+          toast.error('复制失败', e instanceof Error ? e.message : String(e));
+        });
+      },
       isDeleting: isDeleting,
       isSyncing: isSyncing,
       syncingRowId: syncingRowId,
     },
     cellClass: 'flex justify-center items-center',
-    maxWidth: 100,
+    maxWidth: 150,
     pinned: 'right',
   },
 ]);
