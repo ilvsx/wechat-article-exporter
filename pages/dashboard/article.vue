@@ -934,30 +934,33 @@ function copyWechatLink() {
           </ButtonGroup>
 
           <!-- 导出范围 -->
-          <USelectMenu
-            :model-value="exportScope"
-            :options="exportScopeOptions"
-            size="sm"
-            color="gray"
-            class="w-44"
-            @update:model-value="selectExportScope"
-          >
-            <template #label>
-              <span class="flex items-center gap-1.5 text-xs">
-                <UIcon
-                  :name="
-                    exportScope === 'selected'
-                      ? 'i-lucide:check-square'
-                      : exportScope === 'page'
-                        ? 'i-lucide:file-text'
-                        : 'i-lucide:list-filter'
-                  "
-                  class="size-3.5"
-                />
-                {{ exportScopeLabel }}
-              </span>
-            </template>
-          </USelectMenu>
+          <UTooltip text="选择导出按钮的数据范围：勾选的行 / 当前页 / 筛选结果全部" :popper="{ placement: 'top' }">
+            <USelectMenu
+              :model-value="exportScope"
+              :options="exportScopeOptions"
+              size="sm"
+              color="gray"
+              class="w-52"
+              @update:model-value="selectExportScope"
+            >
+              <template #label>
+                <span class="flex items-center gap-1.5 text-xs">
+                  <UIcon
+                    :name="
+                      exportScope === 'selected'
+                        ? 'i-lucide:check-square'
+                        : exportScope === 'page'
+                          ? 'i-lucide:file-text'
+                          : 'i-lucide:list-filter'
+                    "
+                    class="size-3.5"
+                  />
+                  <span class="shrink-0 text-slate-11 dark:text-slate-400">导出范围</span>
+                  {{ exportScopeLabel }}
+                </span>
+              </template>
+            </USelectMenu>
+          </UTooltip>
 
           <ButtonGroup
             :items="[
