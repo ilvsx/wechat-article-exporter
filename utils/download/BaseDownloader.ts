@@ -8,7 +8,7 @@ import { DEFAULT_OPTIONS } from './constants';
 import { ProxyManager } from './ProxyManager';
 import type { Callback, DownloaderStatus, DownloadOptions } from './types';
 
-const { credentials, isExpired } = useCredentials();
+const { credentials } = useCredentials();
 const preferences: Ref<Preferences> = usePreferences() as unknown as Ref<Preferences>;
 
 // 下载器
@@ -147,9 +147,9 @@ export class BaseDownloader {
     try {
       const headers: Record<string, string> = {};
 
-      // 使用设置的 credentials 来抓取元数据
+      // 使用设置的 credentials 来抓取元数据（是否有效以服务端返回为准）
       if (withCredential) {
-        const targetCredential = credentials.value.find(item => item.biz === fakeid && !isExpired(item));
+        const targetCredential = credentials.value.find(item => item.biz === fakeid);
         if (targetCredential) {
           headers.cookie = `pass_ticket=${targetCredential.pass_ticket};wap_sid2=${targetCredential.wap_sid2}`;
         }
@@ -186,11 +186,11 @@ export class BaseDownloader {
     });
   }
 
-  // 当获取阅读量和留言数据时，需要验证 Credential 是否设置正确
+  // 当获取阅读量和留言数据时，需要验证 Credential 是否已设置
   protected validateCredential(fakeid: string): void {
-    const targetCredential = credentials.value.find(item => item.biz === fakeid && !isExpired(item));
+    const targetCredential = credentials.value.find(item => item.biz === fakeid);
     if (!targetCredential) {
-      throw new Error('目标公众号的 Credential 未设置或已过期，请重新抓取');
+      throw new Error('目标公众号的 Credential 未设置，请先抓取');
     }
   }
 }

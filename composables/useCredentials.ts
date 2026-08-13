@@ -19,17 +19,21 @@ export function useCredentials() {
     }, 30_000);
   }
 
+  /**
+   * 凭据是否超过 CREDENTIAL_LIVE_MINUTES(仅用于 UI 展示,不拦截任何请求;
+   * 实际有效性以服务端返回为准,过期即 ret:-3 no session)
+   */
   function isExpired(credential: ParsedCredential): boolean {
     return Date.now() - credential.timestamp > CREDENTIAL_LIVE_MINUTES * 60 * 1000;
   }
 
-  // 有效凭据（响应式，随 tick 自动更新过期状态）
+  // 展示用:未过期凭据(响应式,随 tick 自动更新过期状态)
   const validCredentials = computed(() => {
     void tick.value;
     return credentials.value.filter(credential => !isExpired(credential));
   });
 
-  // 已过期凭据
+  // 展示用:已过期凭据
   const expiredCredentials = computed(() => {
     void tick.value;
     return credentials.value.filter(credential => isExpired(credential));
@@ -37,19 +41,11 @@ export function useCredentials() {
 
   const validCount = computed(() => validCredentials.value.length);
 
-  /**
-   * 获取指定公众号的有效凭据
-   */
-  function getValidCredential(fakeid: string): ParsedCredential | undefined {
-    return credentials.value.find(credential => credential.biz === fakeid && !isExpired(credential));
-  }
-
   return {
     credentials,
     isExpired,
     validCredentials,
     expiredCredentials,
     validCount,
-    getValidCredential,
   };
 }

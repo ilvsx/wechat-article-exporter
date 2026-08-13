@@ -9,20 +9,18 @@ import type { AccountInfo, AppMsgEx, SearchBizResponse } from '~/types/types';
 import { parseGeneralMsgList, parseProfileGetMsgList } from '~/utils/profile-getmsg';
 
 const loginAccount = useLoginAccount();
-const { credentials, isExpired } = useCredentials();
+const { credentials } = useCredentials();
 
 /**
- * 获取指定公众号的有效 Credential
- * @description 微信客户端历史消息接口需要携带动态凭据（key/uin/pass_ticket），凭据约 CREDENTIAL_LIVE_MINUTES 分钟过期
+ * 获取指定公众号的 Credential
+ * @description 微信客户端历史消息接口需要携带动态凭据（key/uin/pass_ticket）。
+ * 凭据是否有效以服务端返回为准（过期返回 ret:-3 no session），本地不按时间强制拦截
  * @param fakeid
  */
 function getCredential(fakeid: string): ParsedCredential {
   const credential = credentials.value.find(item => item.biz === fakeid);
   if (!credential) {
     throw new Error('未找到该公众号的 Credential，请先点击右上角「抓取 Credentials」完成抓取');
-  }
-  if (isExpired(credential)) {
-    throw new Error('该公众号的 Credential 已过期，请点击右上角「抓取 Credentials」重新抓取');
   }
   return credential;
 }

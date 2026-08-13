@@ -16,7 +16,7 @@ import type { DownloadOptions } from './types';
 
 type DownloadType = 'html' | 'metadata' | 'comments' | 'fakeid';
 
-const { credentials, isExpired } = useCredentials();
+const { credentials } = useCredentials();
 const preferences: Ref<Preferences> = usePreferences() as unknown as Ref<Preferences>;
 
 export class Downloader extends BaseDownloader {
@@ -476,8 +476,8 @@ export class Downloader extends BaseDownloader {
     this.abortControllers.set(commentID, abortController);
 
     try {
-      // 使用设置的 credentials 来抓取留言
-      const targetCredential = credentials.value.find(item => item.biz === fakeid && !isExpired(item));
+      // 使用设置的 credentials 来抓取留言（是否有效以服务端返回为准）
+      const targetCredential = credentials.value.find(item => item.biz === fakeid);
       if (!targetCredential) {
         throw new Error('目标公众号的 Credential 未设置');
       }
@@ -525,8 +525,8 @@ export class Downloader extends BaseDownloader {
     this.abortControllers.set(commentID + ':' + contentID, abortController);
 
     try {
-      // 使用设置的 credentials 来抓取留言
-      const targetCredential = credentials.value.find(item => item.biz === fakeid && !isExpired(item));
+      // 使用设置的 credentials 来抓取留言（是否有效以服务端返回为准）
+      const targetCredential = credentials.value.find(item => item.biz === fakeid);
       if (!targetCredential) {
         throw new Error('目标公众号的 Credential 未设置');
       }
