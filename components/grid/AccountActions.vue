@@ -38,7 +38,7 @@ const isLoading = computed(() => props.params.isSyncing && props.params.node.id 
 <template>
   <div class="flex items-center justify-center gap-3">
     <template v-if="isLoading">
-      <UTooltip text="停止同步" :popper="{ placement: 'top' }">
+      <UTooltip text="停止同步" :popper="{ placement: 'bottom' }">
         <UButton color="green" size="xs" variant="solid" class="transition-all duration-150 hover:brightness-110" @click="stop">
           <Loader :size="14" class="animate-spin" />
           停止</UButton
@@ -46,7 +46,7 @@ const isLoading = computed(() => props.params.isSyncing && props.params.node.id 
       </UTooltip>
     </template>
     <template v-else>
-      <UTooltip text="同步文章" :popper="{ placement: 'top' }">
+      <UTooltip text="同步文章" :popper="{ placement: 'bottom' }">
         <UButton
           icon="i-lucide:refresh-cw"
           color="blue"
@@ -57,7 +57,7 @@ const isLoading = computed(() => props.params.isSyncing && props.params.node.id 
         ></UButton>
       </UTooltip>
     </template>
-    <UTooltip text="复制公众号链接" :popper="{ placement: 'top' }">
+    <UTooltip text="复制公众号链接" :popper="{ placement: 'bottom' }">
       <UButton
         :icon="copied ? 'i-lucide:check' : 'i-lucide:link'"
         color="gray"

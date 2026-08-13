@@ -31,7 +31,7 @@ function copyLink() {
 
 <template>
   <div class="flex items-center justify-center">
-    <UTooltip text="复制文章链接" :popper="{ placement: 'top' }">
+    <UTooltip text="复制文章链接" :popper="{ placement: 'bottom' }">
       <UButton
         :icon="copied ? 'i-lucide:check' : 'i-lucide:link'"
         color="blue"
@@ -41,7 +41,7 @@ function copyLink() {
         @click="copyLink"
       />
     </UTooltip>
-    <UTooltip text="访问原文" :popper="{ placement: 'top' }">
+    <UTooltip text="访问原文" :popper="{ placement: 'bottom' }">
       <UButton
         icon="i-lucide:external-link"
         color="blue"
@@ -51,7 +51,7 @@ function copyLink() {
         @click="gotoLink"
       />
     </UTooltip>
-    <UTooltip text="预览" :popper="{ placement: 'top' }">
+    <UTooltip text="预览" :popper="{ placement: 'bottom' }">
       <UButton
         :disabled="!params.data.contentDownload || params.data.downloading"
         icon="i-lucide:flame"
