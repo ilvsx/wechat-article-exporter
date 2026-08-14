@@ -73,12 +73,78 @@ const endTime = ref('23:59');
 // 结束时间跟随当前时刻(勾选后结束时间为"现在",随时间推进)
 const endFollowNow = ref(false);
 
+// ---- URL 状态同步:账号 + 时间范围可深链、可前进/后退 ----
+const route = useRoute();
+const router = useRouter();
+let applyingFromUrl = false;
+
+function readTimeFromUrl(key: string): number | null {
+  const v = route.query[key];
+  return typeof v === 'string' && /^\d+$/.test(v) ? Number(v) : null;
+}
+function readTimeStrFromUrl(key: string, fallback: string): string {
+  const v = route.query[key];
+  return typeof v === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(v) ? v : fallback;
+}
+// URL → 状态(浏览器前进/后退时),期间禁止状态反向写回 URL 造成循环
+function applyUrlToState() {
+  applyingFromUrl = true;
+  dateRangeStart.value = readTimeFromUrl('from');
+  dateRangeEnd.value = readTimeFromUrl('to');
+  startTime.value = readTimeStrFromUrl('fromTime', '00:00');
+  endTime.value = readTimeStrFromUrl('toTime', '23:59');
+  endFollowNow.value = route.query.follow === '1';
+  nextTick(() => {
+    applyingFromUrl = false;
+  });
+}
+// 状态 → URL(replace 不产生历史记录,避免刷爆后退栈)
+function syncStateToUrl() {
+  if (applyingFromUrl) return;
+  const query: Record<string, string> = {};
+  const scopeId = scope.value;
+  if (scopeId !== 'all') query.account = scopeId;
+  if (dateRangeStart.value !== null) {
+    query.from = String(dateRangeStart.value);
+    if (startTime.value !== '00:00') query.fromTime = startTime.value;
+  }
+  if (endFollowNow.value) {
+    query.follow = '1';
+  } else if (dateRangeEnd.value !== null) {
+    query.to = String(dateRangeEnd.value);
+    if (endTime.value !== '23:59') query.toTime = endTime.value;
+  }
+  router.replace({ query }).catch(() => {});
+}
+// URL → 账号(异步,onMounted 中先恢复再加载,避免双重加载)
+async function restoreAccountFromUrl(): Promise<boolean> {
+  const fakeid = route.query.account;
+  if (typeof fakeid === 'string' && fakeid && fakeid !== ALL_ACCOUNTS_FAKEID) {
+    const info = await getInfoCache(fakeid);
+    if (info) {
+      selectedAccount.value = info;
+      return true;
+    }
+  }
+  return false;
+}
+// 初始从 URL 恢复时间范围(在 watch 注册前,避免触发一次多余的 URL 写回)
+applyUrlToState();
+watch(
+  () => route.query,
+  () => {
+    if (applyingFromUrl) return;
+    applyUrlToState();
+    applyDateRangeFilter();
+  }
+);
+
 const QUICK_RANGES = [
-  { key: 'today', label: '当天' },
-  { key: '1d', label: '1天' },
-  { key: '7d', label: '7天' },
-  { key: '14d', label: '14天' },
-  { key: '30d', label: '30天' },
+  { key: 'today', label: '今天' },
+  { key: '1d', label: '最近 1 天' },
+  { key: '7d', label: '最近 7 天' },
+  { key: '14d', label: '最近 14 天' },
+  { key: '30d', label: '最近 30 天' },
 ];
 
 function composeTimestamp(dateTs: number, time: string): number {
@@ -91,10 +157,6 @@ function composeTimestamp(dateTs: number, time: string): number {
     .unix();
 }
 
-function formatDateTime(dateTs: number | null, time: string, fallback: string): string {
-  return dateTs === null ? fallback : dayjs.unix(composeTimestamp(dateTs, time)).format('MM-DD HH:mm');
-}
-
 // 快捷范围:当天=今日 00:00 起;Nd=当前时刻往前 N 天;结束均跟随当前
 function applyQuickRange(key: string) {
   const now = dayjs();
@@ -104,7 +166,11 @@ function applyQuickRange(key: string) {
     startTime.value = '00:00';
   } else {
     const days = Number(key.replace('d', ''));
-    dateRangeStart.value = now.subtract(days, 'days').unix();
+    dateRangeStart.value = now
+      .subtract(days, 'days')
+      .second(0)
+      .millisecond(0)
+      .unix();
     startTime.value = now.format('HH:mm');
   }
   dateRangeEnd.value = null;
@@ -113,15 +179,34 @@ function applyQuickRange(key: string) {
 }
 
 // 当前范围匹配的快捷项(用于按钮选中态)
+// 容差取 1 小时:快捷范围是「分钟级窗口」语义,时间戳秒级漂移(URL 恢复/延迟求值)不应导致高亮丢失
 const activeQuick = computed(() => {
   if (!endFollowNow.value || dateRangeStart.value === null) return null;
-  const now = Date.now();
+  const now = Math.floor(Date.now() / 1000);
   const s = composeTimestamp(dateRangeStart.value, startTime.value);
   if (s === dayjs().startOf('day').unix()) return 'today';
   for (const d of [1, 7, 14, 30]) {
-    if (Math.abs(s - (now - d * 86400)) < 120) return `${d}d`;
+    if (Math.abs(s - (now - d * 86400)) < 3600) return `${d}d`;
   }
   return null;
+});
+
+// 触发按钮摘要:永远显示「当前生效的范围」,用户无需拼装多个控件状态
+const rangeSummary = computed(() => {
+  const fmt = (ts: number) => dayjs.unix(ts).format('MM-DD HH:mm');
+  const startTs = dateRangeStart.value !== null ? composeTimestamp(dateRangeStart.value, startTime.value) : null;
+  // 快捷范围优先展示为「最近 N 天」而非绝对日期
+  if (endFollowNow.value) {
+    const quick = QUICK_RANGES.find(r => r.key === activeQuick.value);
+    if (quick) return quick.label;
+    if (startTs !== null) return `${fmt(startTs)} – 至今`;
+    return '全部时间';
+  }
+  const endTs = dateRangeEnd.value !== null ? composeTimestamp(dateRangeEnd.value, endTime.value) : null;
+  if (startTs === null && endTs === null) return '全部时间';
+  if (startTs === null) return `${fmt(endTs!)} 之前`;
+  if (endTs === null) return `${fmt(startTs)} 之后`;
+  return `${fmt(startTs)} – ${fmt(endTs)}`;
 });
 
 // 按发布时间范围过滤表格数据(精确到分钟)
@@ -157,6 +242,7 @@ function clearDateRange() {
 
 watch([dateRangeStart, dateRangeEnd, startTime, endTime, endFollowNow], () => {
   applyDateRangeFilter();
+  syncStateToUrl();
 });
 
 const columnDefs = ref<ColDef[]>([
@@ -410,7 +496,7 @@ const columnDefs = ref<ColDef[]>([
         preview(params.data);
       },
       onGotoLink: (params: ICellRendererParams) => {
-        window.open(params.value, '_blank');
+        window.open(params.value, '_blank', 'noopener');
       },
       onCopyLink: (params: ICellRendererParams) => {
         navigator.clipboard.writeText(params.value).catch(e => {
@@ -546,11 +632,16 @@ watch(scope, () => {
 
 watch(selectedAccount, () => {
   switchTableData(scope.value).catch(() => {});
+  syncStateToUrl();
 });
 
-onMounted(() => {
-  // 进入页面默认加载全部公众号文章
-  switchTableData(scope.value).catch(() => {});
+onMounted(async () => {
+  // 先恢复 URL 中的账号(若存在),避免先加载全部再切单账号的双重加载
+  const restored = await restoreAccountFromUrl();
+  if (!restored) {
+    // 进入页面默认加载全部公众号文章
+    switchTableData(scope.value).catch(() => {});
+  }
 });
 
 async function switchTableData(fakeid: string) {
@@ -843,62 +934,60 @@ async function debug() {
           <div class="flex space-x-3">
             <AccountSelectorForArticle v-model="selectedAccount" class="w-80" />
           </div>
-          <!-- 发布时间范围筛选 -->
-          <div class="flex flex-wrap items-center gap-2">
-            <!-- 快捷范围 -->
-            <div class="flex items-center gap-0.5 rounded-lg bg-slate-3 p-0.5 dark:bg-slate-800">
-              <UButton
-                v-for="r in QUICK_RANGES"
-                :key="r.key"
-                size="xs"
-                :variant="activeQuick === r.key ? 'solid' : 'ghost'"
-                :color="activeQuick === r.key ? 'primary' : 'gray'"
-                @click="applyQuickRange(r.key)"
-                >{{ r.label }}</UButton
-              >
-            </div>
-            <!-- 开始时间 -->
-            <UPopover :popper="{ placement: 'bottom-start' }">
-              <UButton
-                color="gray"
-                size="sm"
-                icon="i-lucide:calendar-clock"
-                :label="formatDateTime(dateRangeStart, startTime, '开始时间')"
-              />
-              <template #panel="{ close }">
-                <div class="flex flex-col gap-3 p-3">
-                  <BaseDatePicker v-model="dateRangeStart" @close="close" />
-                  <UInput v-model="startTime" type="time" size="sm" class="w-36" />
-                </div>
-              </template>
-            </UPopover>
-            <span class="select-none text-slate-9">–</span>
-            <!-- 结束时间 -->
-            <UPopover :popper="{ placement: 'bottom-start' }">
-              <UButton
-                color="gray"
-                size="sm"
-                icon="i-lucide:calendar-clock"
-                :label="endFollowNow ? '跟随当前时刻' : formatDateTime(dateRangeEnd, endTime, '结束时间')"
-                :disabled="endFollowNow"
-              />
-              <template #panel="{ close }">
-                <div class="flex flex-col gap-3 p-3">
-                  <BaseDatePicker v-model="dateRangeEnd" :disabled="endFollowNow" @close="close" />
-                  <UInput v-model="endTime" type="time" size="sm" class="w-36" :disabled="endFollowNow" />
-                </div>
-              </template>
-            </UPopover>
-            <UCheckbox v-model="endFollowNow" size="sm" label="结束跟随当前" />
+          <!-- 发布时间范围筛选(单一入口:摘要按钮 + 分层面板) -->
+          <UPopover :popper="{ placement: 'bottom-start' }" :ui="{ width: 'max-w-2xl' }">
             <UButton
-              v-if="dateRangeStart !== null || dateRangeEnd !== null || endFollowNow"
-              size="xs"
               color="gray"
-              variant="ghost"
-              icon="i-lucide:x"
-              @click="clearDateRange"
+              size="sm"
+              icon="i-lucide:calendar-clock"
+              :label="rangeSummary"
+              class="max-w-72 justify-start"
+              aria-label="筛选发布时间"
             />
-          </div>
+            <template #panel>
+              <div class="flex flex-col gap-3 p-3">
+                <!-- 快捷范围 -->
+                <div class="flex flex-wrap items-center gap-0.5 rounded-lg bg-slate-3 p-0.5 dark:bg-slate-800">
+                  <UButton
+                    v-for="r in QUICK_RANGES"
+                    :key="r.key"
+                    size="xs"
+                    :variant="activeQuick === r.key ? 'solid' : 'ghost'"
+                    :color="activeQuick === r.key ? 'primary' : 'gray'"
+                    @click="applyQuickRange(r.key)"
+                    >{{ r.label }}</UButton
+                  >
+                </div>
+                <div class="h-px bg-slate-4 dark:bg-slate-800"></div>
+                <!-- 自定义范围 -->
+                <div class="flex flex-wrap gap-4">
+                  <div class="flex flex-col gap-1.5">
+                    <p class="text-xs font-medium text-slate-11 dark:text-slate-400">开始日期</p>
+                    <BaseDatePicker v-model="dateRangeStart" />
+                    <UInput v-model="startTime" type="time" size="sm" class="w-32" aria-label="开始时间" />
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <p class="text-xs font-medium text-slate-11 dark:text-slate-400">结束日期</p>
+                    <BaseDatePicker v-model="dateRangeEnd" :disabled="endFollowNow" />
+                    <UInput v-model="endTime" type="time" size="sm" class="w-32" :disabled="endFollowNow" aria-label="结束时间" />
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <UCheckbox v-model="endFollowNow" size="sm" label="至今" />
+                  <UButton
+                    v-if="dateRangeStart !== null || dateRangeEnd !== null || endFollowNow"
+                    size="xs"
+                    color="gray"
+                    variant="ghost"
+                    icon="i-lucide:x"
+                    aria-label="清除时间范围筛选"
+                    @click="clearDateRange"
+                    >清除</UButton
+                  >
+                </div>
+              </div>
+            </template>
+          </UPopover>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <UButton v-if="downloadBtnLoading" color="rose" variant="soft" @click="stopDownload">停止</UButton>
