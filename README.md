@@ -1,19 +1,25 @@
 # wechat-article-exporter（社区 fork）
 
-> [!IMPORTANT]
-> **fork 更新说明（2026-08）**
->
-> 本仓库是上游 [wechat-article/wechat-article-exporter](https://github.com/wechat-article/wechat-article-exporter) 的社区 fork。
-> 上游依赖的「公众号后台超链接接口」已被微信关闭（[上游停更说明 #200](https://github.com/wechat-article/wechat-article-exporter/issues/200)），本 fork 已将历史文章同步改造为基于 **Credential**（微信客户端动态凭据）的通道：
->
-> - 凭据获取：mitmproxy 插件（`public/plugins/credential.py`，支持任意参数顺序的 `s?` 链接）或 wxdown-service，页面右上角「抓取 Credentials」面板
-> - 凭据约 **25 分钟**过期，过期后在 PC 微信中重新打开一篇目标公众号文章即可刷新
-> - 阅读量、留言等元数据导出同样依赖 Credential，机制不变
-> - 历史列表分页、完成状态、消息总数显示均已适配新接口结构
->
-> 主要改动：[历史同步改走 Credential 通道](https://github.com/ilvsx/wechat-article-exporter/commits/master)、[文章下载页时间范围筛选](https://github.com/ilvsx/wechat-article-exporter/commits/master)、[插件匹配增强](https://github.com/ilvsx/wechat-article-exporter/commits/master)
->
-> 快速开始（本地运行）：`yarn dev` 后访问 http://localhost:3000 —— 抓取凭据 → 添加公众号 → 同步。详见上方改动提交与「抓取 Credentials」面板内提示。
+## 关于本 fork
+
+本仓库是上游 [wechat-article/wechat-article-exporter](https://github.com/wechat-article/wechat-article-exporter) 的社区 fork。上游依赖的「公众号后台超链接接口」已被微信关闭（[上游停更说明 #200](https://github.com/wechat-article/wechat-article-exporter/issues/200)），本 fork 已将历史文章同步改造为基于 **Credential**（微信客户端动态凭据）的通道。
+
+### 核心变化
+
+- **凭据获取**：mitmproxy 插件（`public/plugins/credential.py`，支持任意参数顺序的 `s?` 链接）或 wxdown-service，页面右上角「抓取 Credentials」面板
+- **凭据有效期**：约 **25 分钟**，过期后在 PC 微信中重新打开一篇目标公众号文章即可刷新
+- **元数据导出**：阅读量、留言等同样依赖 Credential，机制不变
+- **接口适配**：历史列表分页、完成状态、消息总数显示均已适配新接口结构
+
+### 主要改动
+
+- [历史同步改走 Credential 通道](https://github.com/ilvsx/wechat-article-exporter/commits/master)
+- [文章下载页时间范围筛选](https://github.com/ilvsx/wechat-article-exporter/commits/master)
+- [插件匹配增强](https://github.com/ilvsx/wechat-article-exporter/commits/master)
+
+### 快速开始（本地运行）
+
+`yarn dev` 后访问 http://localhost:3000 —— 抓取凭据 → 添加公众号 → 同步。详见上方改动提交与「抓取 Credentials」面板内提示。
 
 <hr />
 
