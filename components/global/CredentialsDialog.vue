@@ -40,6 +40,9 @@
                   v-model="wsURL"
                   :disabled="monitoring || wsMonitoring"
                   placeholder="请输入 ws 监听地址"
+                  aria-label="ws 监听地址"
+                  autocomplete="off"
+                  spellcheck="false"
                 />
                 <UButton
                   v-if="!wsMonitoring"
@@ -80,9 +83,25 @@
                   class="flex-1"
                   color="gray"
                   v-model="apiKey"
+                  :type="showApiKey ? 'text' : 'password'"
                   :disabled="authorized || wsMonitoring"
                   placeholder="请输入API Key"
-                />
+                  aria-label="API Key"
+                  autocomplete="off"
+                  spellcheck="false"
+                >
+                  <template #trailing>
+                    <UButton
+                      square
+                      size="xs"
+                      variant="ghost"
+                      color="gray"
+                      :icon="showApiKey ? 'i-lucide:eye-off' : 'i-lucide:eye'"
+                      :aria-label="showApiKey ? '隐藏 API Key' : '显示 API Key'"
+                      @click="showApiKey = !showApiKey"
+                    />
+                  </template>
+                </UInput>
                 <UButton
                   class="px-5"
                   color="blue"
@@ -99,6 +118,10 @@
                   >监控中，结束监控</UButton
                 >
               </div>
+              <p v-if="authError" class="flex items-center gap-1.5 mt-2 text-xs text-rose-600 dark:text-rose-400">
+                <UIcon name="i-lucide:triangle-alert" class="size-3.5 shrink-0" />
+                {{ authError }}
+              </p>
             </div>
           </template>
         </UTabs>
@@ -338,11 +361,14 @@ async function downloadProgram() {
 }
 
 const apiKey = ref(localStorage.getItem('auto-detect-credentials:apikey') as string);
+const showApiKey = ref(false);
+const authError = ref('');
 const authorizeBtnLoading = ref(false);
 const authorized = ref(false);
 
 // 认证
 async function authorize() {
+  authError.value = '';
   try {
     authorizeBtnLoading.value = true;
     const response = await fetch(`${CREDENTIAL_API_HOST}/authorize`, {
@@ -354,17 +380,17 @@ async function authorize() {
     if (response.status === 200) {
       authorized.value = true;
       localStorage.setItem('auto-detect-credentials:apikey', apiKey.value);
-      alert('认证成功');
+      toast.success('认证成功', '已连接 mitmproxy 服务');
     } else {
       authorized.value = false;
       localStorage.removeItem('auto-detect-credentials:apikey');
-      alert('认证失败，请确认 API Key 是否正确');
+      authError.value = '认证失败，请确认 API Key 是否正确';
     }
   } catch (error: any) {
     if (error.message === 'Failed to fetch') {
-      alert('mitmproxy 服务未启动');
+      authError.value = 'mitmproxy 服务未启动，请先执行 mitmdump 命令';
     } else {
-      alert(error.message);
+      authError.value = error.message;
     }
     authorized.value = false;
   } finally {

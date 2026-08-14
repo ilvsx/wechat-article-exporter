@@ -4,7 +4,7 @@
     size="md"
     color="gray"
     searchable
-    searchable-placeholder="筛选公众号..."
+    searchable-placeholder="筛选公众号…"
     clear-search-on-close
     :options="sortedAccountInfos"
     option-attribute="nickname"

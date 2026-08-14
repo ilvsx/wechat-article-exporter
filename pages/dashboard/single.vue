@@ -19,6 +19,7 @@ import { formatTimeStamp } from '#shared/utils/helpers';
 import GridArticleActions from '~/components/grid/ArticleActions.vue';
 import GridLoading from '~/components/grid/Loading.vue';
 import GridNoRows from '~/components/grid/NoRows.vue';
+import ConfirmModal from '~/components/modal/Confirm.vue';
 import PreviewArticle from '~/components/preview/Article.vue';
 import toastFactory from '~/composables/toast';
 import { websiteName } from '~/config';
@@ -59,6 +60,7 @@ interface SingleArticleRow extends Partial<ArticleMetadata> {
 const preferences = usePreferences();
 
 const toast = toastFactory();
+const modal = useModal();
 const inputUrl = ref('');
 
 const globalRowData = useLocalStorage<SingleArticleRow[]>('single-article:rows', []);
@@ -576,15 +578,21 @@ async function removeRows() {
     toast.info('提示', '请选择要移除的文章');
     return;
   }
-  try {
-    await Promise.all(selectedRows.map(row => deleteRowData(row)));
-    globalRowData.value = globalRowData.value.filter(row => !selectedRows.some(sel => sel.id === row.id));
-    gridApi.value?.deselectAll();
-    refreshGrid();
-    toast.success('移除成功', `已移除 ${selectedRows.length} 篇文章`);
-  } catch (error: any) {
-    toast.error('移除失败', error?.message || '删除本地缓存时出错');
-  }
+  modal.open(ConfirmModal, {
+    title: `确定要移除选中的 ${selectedRows.length} 篇文章吗？`,
+    description: '移除后，这些文章的本地内容与留言缓存将被永久删除，且不可恢复。',
+    onConfirm: async () => {
+      try {
+        await Promise.all(selectedRows.map(row => deleteRowData(row)));
+        globalRowData.value = globalRowData.value.filter(row => !selectedRows.some(sel => sel.id === row.id));
+        gridApi.value?.deselectAll();
+        refreshGrid();
+        toast.success('移除成功', `已移除 ${selectedRows.length} 篇文章`);
+      } catch (error: any) {
+        toast.error('移除失败', error?.message || '删除本地缓存时出错');
+      }
+    },
+  });
 }
 </script>
 
@@ -600,7 +608,15 @@ async function removeRows() {
         class="flex flex-col gap-3 rounded-lg border border-slate-6 bg-white px-4 py-3 shadow-card dark:border-slate-800 dark:bg-slate-900 lg:flex-row lg:items-center lg:justify-between"
       >
         <div class="flex flex-1 gap-3">
-          <UInput v-model="inputUrl" placeholder="请输入公众号文章链接" class="flex-1" @keyup.enter="addArticle" />
+          <UInput
+            v-model="inputUrl"
+            placeholder="请输入公众号文章链接…"
+            class="flex-1"
+            aria-label="公众号文章链接"
+            autocomplete="off"
+            spellcheck="false"
+            @keyup.enter="addArticle"
+          />
           <UButton color="primary" @click="addArticle">添加</UButton>
         </div>
         <div class="flex items-center gap-3">
@@ -632,16 +648,12 @@ async function removeRows() {
               { label: 'HTML', event: 'export-article-html' },
               { label: 'Txt', event: 'export-article-text' },
               { label: 'Markdown', event: 'export-article-markdown' },
-              { label: 'Word (内测中)', event: 'export-article-word' },
-              { label: 'PDF (内测中)', event: 'export-article-pdf' },
             ]"
             @export-article-excel="exportFile('excel', selectedArticleUrls)"
             @export-article-json="exportFile('json', selectedArticleUrls)"
             @export-article-html="exportFile('html', selectedArticleUrls, contentNotDownloadedCount)"
             @export-article-text="exportFile('text', selectedArticleUrls, contentNotDownloadedCount)"
             @export-article-markdown="exportFile('markdown', selectedArticleUrls, contentNotDownloadedCount)"
-            @export-article-word="exportFile('word', selectedArticleUrls, contentNotDownloadedCount)"
-            @export-article-pdf="exportFile('pdf', selectedArticleUrls, contentNotDownloadedCount)"
           >
             <UButton
               :loading="exportBtnLoading"

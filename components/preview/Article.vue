@@ -33,7 +33,6 @@ async function open(article: AppMsgEx) {
     isOpen.value = true;
     const rawHtml = await htmlAsset.file.text();
     const cgiData = await parseCgiDataNew(rawHtml);
-    console.log(cgiData);
 
     // articleHtml.value = await normalizeHtmlForPreview(htmlAsset, rawHtml);
     articleHtml.value = await renderHTMLFromCgiDataNew(
@@ -157,7 +156,7 @@ async function normalizeHtmlForPreview(cachedHtml: HtmlAsset, html: string): Pro
     let content = div.innerText;
     content = content.replace(/</g, '&lt;').replace(/>/g, '&gt;').trim();
     if (content.length > 140) {
-      content = content.substr(0, 140) + '...';
+      content = content.substr(0, 140) + '…';
     }
     const digest = content.split('\n').map(function (line) {
       return '<p>' + line + '</p>';

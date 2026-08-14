@@ -83,7 +83,7 @@ export default (options: Partial<DownloadArticleOptions> = {}) => {
       await downloader.startDownload('html');
     } catch (error) {
       console.error('【文章内容】抓取失败:', error);
-      alert((error as Error).message);
+      toast.error('抓取失败', (error as Error).message);
     } finally {
       loading.value = false;
       cleanupDownloader();
@@ -139,7 +139,7 @@ export default (options: Partial<DownloadArticleOptions> = {}) => {
       await downloader.startDownload('metadata');
     } catch (error) {
       console.error('【阅读量】抓取失败:', error);
-      alert((error as Error).message);
+      toast.error('抓取失败', (error as Error).message);
     } finally {
       loading.value = false;
       cleanupDownloader();
@@ -183,7 +183,7 @@ export default (options: Partial<DownloadArticleOptions> = {}) => {
       await downloader.startDownload('comments');
     } catch (error) {
       console.error('【留言内容】抓取失败:', error);
-      alert((error as Error).message);
+      toast.error('抓取失败', (error as Error).message);
     } finally {
       loading.value = false;
       cleanupDownloader();
@@ -230,7 +230,7 @@ export default (options: Partial<DownloadArticleOptions> = {}) => {
       await downloader.startDownload('fakeid');
     } catch (error) {
       console.error('【fakeid】修复失败:', error);
-      alert((error as Error).message);
+      toast.error('抓取失败', (error as Error).message);
     } finally {
       loading.value = false;
       cleanupDownloader();

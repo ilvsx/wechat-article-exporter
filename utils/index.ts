@@ -893,7 +893,7 @@ ${commentHTML}
 }
 
 export function gotoLink(url: string) {
-  window.open(url);
+  window.open(url, '_blank', 'noopener');
 }
 
 // 计算最佳并发量

@@ -51,6 +51,7 @@ function toggleColorMode() {
             square
             ghost
             :color="isCredentialActive ? 'blue' : 'gray'"
+            aria-label="抓取 Credentials"
             @click="credentialsDialogOpen = true"
           >
             <UIcon name="i-lucide:dog" class="size-5" />
@@ -62,7 +63,7 @@ function toggleColorMode() {
     <!-- 深浅色切换 -->
     <li>
       <UTooltip :text="isDark ? '切换到浅色模式' : '切换到深色模式'">
-        <UButton square ghost color="gray" @click="toggleColorMode">
+        <UButton square ghost color="gray" aria-label="切换深浅色模式" @click="toggleColorMode">
           <UIcon :name="isDark ? 'i-lucide:sun' : 'i-lucide:moon'" class="size-5" />
         </UButton>
       </UTooltip>
@@ -71,7 +72,7 @@ function toggleColorMode() {
     <!-- 文档 -->
     <li>
       <UTooltip text="文档">
-        <UButton square ghost color="gray" icon="i-lucide:book-open" @click="gotoLink(docsWebSite)" />
+        <UButton square ghost color="gray" icon="i-lucide:book-open" aria-label="打开文档" @click="gotoLink(docsWebSite)" />
       </UTooltip>
     </li>
 
@@ -83,6 +84,7 @@ function toggleColorMode() {
           ghost
           color="gray"
           icon="i-lucide:github"
+          aria-label="打开 GitHub 仓库"
           @click="gotoLink('https://github.com/wechat-article/wechat-article-exporter')"
         />
       </UTooltip>

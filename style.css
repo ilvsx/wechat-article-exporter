@@ -60,6 +60,18 @@ body {
     scrollbar-width: none; /* Firefox */
 }
 
+/* 系统开启「减少动态效果」时,全局压缩过渡/动画 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
 /* ============ 页面过渡 ============ */
 .page-enter-active,
 .page-leave-active {

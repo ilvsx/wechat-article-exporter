@@ -70,6 +70,7 @@ onUnmounted(() => {
       variant="ghost"
       icon="i-lucide:columns-3"
       :title="'重置列设置 (Ctrl+Alt+R)'"
+      aria-label="重置列设置"
       @click="resetColumns"
       >重置列</UButton
     >

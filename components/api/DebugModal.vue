@@ -105,7 +105,7 @@ function submit() {
 <template>
   <div>
     <UTooltip text="在线调试" :popper="{ placement: 'top' }">
-      <UButton color="blue" variant="ghost" square @click="onOpen" icon="i-lucide:bug-play"></UButton>
+      <UButton color="blue" variant="ghost" square @click="onOpen" icon="i-lucide:bug-play" aria-label="在线调试"></UButton>
     </UTooltip>
 
     <USlideover v-model="isOpen" :ui="{ width: 'max-w-[800px]' }">

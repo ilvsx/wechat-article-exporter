@@ -88,7 +88,7 @@
           </div>
           <div class="sticky top-0 px-5 py-3 bg-white border-b dark:bg-slate-900 dark:border-slate-800">
             <p class="flex items-center space-x-2 mb-2">
-              <img class="size-5" :src="albumBaseInfo.brand_icon" alt="" />
+              <img class="size-5" :src="albumBaseInfo.brand_icon" alt="" width="20" height="20" />
               <span>{{ albumBaseInfo.nickname }}</span>
             </p>
             <p class="text-sm text-slate-10">
@@ -111,7 +111,7 @@
                   </h3>
                   <time class="text-sm text-slate-10">{{ formatAlbumTime(+article.create_time) }}</time>
                 </div>
-                <img class="size-16 ml-4 flex-shrink-0" :src="article.cover_img_1_1" alt="" />
+                <img class="size-16 ml-4 flex-shrink-0" :src="article.cover_img_1_1" alt="" width="64" height="64" />
               </li>
             </ul>
 

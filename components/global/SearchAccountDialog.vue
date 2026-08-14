@@ -11,20 +11,25 @@
           <li
             v-for="account in accountList"
             :key="account.fakeid"
-            class="flex items-center px-2 py-4 hover:bg-slate-50 hover:cursor-pointer"
-            @click="selectAccount(account)"
+            class="flex items-center px-2 py-4 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
-            <img class="size-20 mr-2" :src="account.round_head_img" alt="" />
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <p class="font-semibold">{{ account.nickname }}</p>
-                <p class="text-blue-600 font-medium">
-                  {{ ACCOUNT_TYPE[account.service_type] }}
-                </p>
+            <button
+              type="button"
+              class="flex w-full items-center text-left focus-visible:outline-none"
+              @click="selectAccount(account)"
+            >
+              <img class="size-20 mr-2" :src="account.round_head_img" alt="" width="80" height="80" />
+              <div class="flex-1">
+                <div class="flex justify-between">
+                  <p class="font-semibold">{{ account.nickname }}</p>
+                  <p class="text-blue-600 font-medium">
+                    {{ ACCOUNT_TYPE[account.service_type] }}
+                  </p>
+                </div>
+                <p class="text-slate-11 text-sm">微信号: {{ account.alias || '未设置' }}</p>
+                <p class="text-sm mt-2">{{ account.signature }}</p>
               </div>
-              <p class="text-slate-11 text-sm">微信号: {{ account.alias || '未设置' }}</p>
-              <p class="text-sm mt-2">{{ account.signature }}</p>
-            </div>
+            </button>
           </li>
         </ul>
 
@@ -32,14 +37,9 @@
           <Loader :size="28" class="animate-spin text-slate-500" />
         </p>
         <p v-else-if="noMoreData" class="text-center mt-2 py-2 text-slate-400">已全部加载完毕</p>
-        <button
-          v-else-if="accountList.length > 0"
-          @click="loadData"
-          class="block mx-auto my-2 h-10 px-6 font-semibold rounded-md border border-slate-200 text-slate-900 dark:text-slate-300 hover:border-slate-400"
-          type="button"
-        >
-          加载更多
-        </button>
+        <div v-else-if="accountList.length > 0" class="flex justify-center py-2">
+          <UButton color="gray" variant="outline" size="sm" @click="loadData">加载更多</UButton>
+        </div>
       </div>
     </div>
   </USlideover>

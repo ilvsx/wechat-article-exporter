@@ -40,7 +40,7 @@ export default () => {
       await manager.startExport('excel');
     } catch (error) {
       console.error('导出任务失败:', error);
-      alert((error as Error).message);
+      toast.error('导出失败', (error as Error).message);
     } finally {
       loading.value = false;
     }
@@ -75,7 +75,7 @@ export default () => {
       await manager.startExport('json');
     } catch (error) {
       console.error('导出任务失败:', error);
-      alert((error as Error).message);
+      toast.error('导出失败', (error as Error).message);
     } finally {
       loading.value = false;
     }
@@ -120,7 +120,7 @@ export default () => {
       await manager.startExport('html');
     } catch (error) {
       console.error('导出任务失败:', error);
-      alert((error as Error).message);
+      toast.error('导出失败', (error as Error).message);
     } finally {
       loading.value = false;
     }
@@ -157,7 +157,7 @@ export default () => {
       await manager.startExport('txt');
     } catch (error) {
       console.error('导出任务失败:', error);
-      alert((error as Error).message);
+      toast.error('导出失败', (error as Error).message);
     } finally {
       loading.value = false;
     }
@@ -194,7 +194,7 @@ export default () => {
       await manager.startExport('markdown');
     } catch (error) {
       console.error('导出任务失败:', error);
-      alert((error as Error).message);
+      toast.error('导出失败', (error as Error).message);
     } finally {
       loading.value = false;
     }
@@ -231,7 +231,7 @@ export default () => {
       await manager.startExport('word');
     } catch (error) {
       console.error('导出任务失败:', error);
-      alert((error as Error).message);
+      toast.error('导出失败', (error as Error).message);
     } finally {
       loading.value = false;
     }
@@ -276,7 +276,7 @@ export default () => {
       await manager.startExport('pdf');
     } catch (error) {
       console.error('导出任务失败:', error);
-      alert((error as Error).message);
+      toast.error('导出失败', (error as Error).message);
     } finally {
       loading.value = false;
     }

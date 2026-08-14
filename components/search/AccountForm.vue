@@ -7,7 +7,10 @@
       v-model="query"
       size="md"
       :trailing="false"
-      placeholder="搜索公众号名称"
+      placeholder="搜索公众号名称…"
+      aria-label="搜索公众号名称"
+      autocomplete="off"
+      spellcheck="false"
     />
   </form>
 </template>

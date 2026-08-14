@@ -537,7 +537,7 @@ const { getActualDateRange } = useSyncDeadline();
       <!-- 顶部操作区 -->
       <header class="flex items-center gap-2 rounded-lg border border-slate-6 bg-white px-4 py-3 shadow-card dark:border-slate-800 dark:bg-slate-900">
         <UButton icon="i-lucide:user-plus" color="primary" :disabled="isDeleting || addBtnLoading" @click="addAccount">
-          {{ addBtnLoading ? '添加中...' : '添加' }}
+          {{ addBtnLoading ? '添加中…' : '添加' }}
         </UButton>
         <UButton icon="i-lucide:arrow-down-to-line" color="gray" :loading="importBtnLoading" @click="importAccount">
           批量导入

@@ -39,7 +39,7 @@ const isLoading = computed(() => props.params.isSyncing && props.params.node.id 
   <div class="flex items-center justify-center gap-3">
     <template v-if="isLoading">
       <UTooltip text="停止同步" :popper="{ placement: 'bottom' }">
-        <UButton color="green" size="xs" variant="solid" class="transition-all duration-150 hover:brightness-110" @click="stop">
+        <UButton color="green" size="xs" variant="solid" class="transition-all duration-150 hover:brightness-110" aria-label="停止同步" @click="stop">
           <Loader :size="14" class="animate-spin" />
           停止</UButton
         >
@@ -52,6 +52,7 @@ const isLoading = computed(() => props.params.isSyncing && props.params.node.id 
           color="blue"
           size="xs"
           :disabled="isDisabled"
+          aria-label="同步文章"
           class="transition-all duration-150 hover:brightness-110"
           @click="sync"
         ></UButton>
@@ -65,6 +66,7 @@ const isLoading = computed(() => props.params.isSyncing && props.params.node.id 
         square
         variant="ghost"
         :disabled="isDisabled"
+        aria-label="复制公众号链接"
         class="transition-all duration-150 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400"
         @click="copyLink"
       />

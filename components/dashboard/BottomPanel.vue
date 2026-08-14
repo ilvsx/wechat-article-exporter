@@ -3,9 +3,11 @@ import { formatDistance } from 'date-fns';
 import { request } from '#shared/utils/request';
 import LoginModal from '~/components/modal/Login.vue';
 import StorageUsage from '~/components/StorageUsage.vue';
+import toastFactory from '~/composables/toast';
 import { IMAGE_PROXY } from '~/config';
 import type { LogoutResponse } from '~/types/types';
 
+const toast = toastFactory();
 const loginAccount = useLoginAccount();
 const modal = useModal();
 
@@ -82,7 +84,7 @@ async function logout() {
   const { statusCode, statusText } = await request<LogoutResponse>('/api/web/mp/logout');
   // 接口调用失败时，提示消息，但是不阻止前端退出
   if (statusCode !== 200) {
-    alert(statusText);
+    toast.error('退出接口调用失败', statusText);
   }
   loginAccount.value = null;
   logoutBtnLoading.value = false;
@@ -92,7 +94,7 @@ let timer: number;
 onMounted(() => {
   timer = window.setInterval(() => {
     now.value = new Date();
-  }, 1000);
+  }, 10000);
 });
 onUnmounted(() => {
   window.clearInterval(timer);
@@ -108,6 +110,8 @@ onUnmounted(() => {
           :src="IMAGE_PROXY + loginAccount.avatar"
           alt=""
           class="rounded-full size-10 ring-1 ring-slate-4 dark:ring-slate-700"
+          width="40"
+          height="40"
         />
         <UTooltip
           v-if="loginAccount.nickname"
